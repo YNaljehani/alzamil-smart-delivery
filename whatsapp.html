@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASDP - محاكاة إشعارات واتساب</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/shared.css" rel="stylesheet">
+    <link href="css/whatsapp.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ====== Navigation ====== -->
+    <nav class="asdp-navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="logo-icon">🚛</div>
+            <span>ASDP</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="bi bi-house-door"></i> الرئيسية</a></li>
+            <li><a href="sra-form.html"><i class="bi bi-clipboard-check"></i> تقييم الموقع</a></li>
+            <li><a href="dashboard.html"><i class="bi bi-grid-1x2"></i> لوحة التحكم</a></li>
+            <li><a href="tracking.html"><i class="bi bi-geo-alt"></i> التتبع</a></li>
+            <li><a href="whatsapp.html"><i class="bi bi-whatsapp"></i> واتساب</a></li>
+        </ul>
+    </nav>
+
+    <!-- ====== Page Title ====== -->
+    <div class="wa-page-title">
+        <h2><i class="bi bi-whatsapp" style="color: #25d366;"></i> محاكاة إشعارات واتساب</h2>
+        <p>تجربة تفاعلية لرحلة العميل عبر رسائل واتساب التلقائية</p>
+    </div>
+
+    <!-- ====== Progress ====== -->
+    <div class="wa-progress-wrap">
+        <span class="wa-progress-text" id="progressText">0 / 10</span>
+        <div class="wa-progress-bar">
+            <div class="wa-progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- ====== Phone Frame ====== -->
+    <div class="phone-frame">
+
+        <!-- WhatsApp Header -->
+        <div class="wa-header">
+            <span class="wa-header-back"><i class="bi bi-arrow-left"></i></span>
+            <div class="wa-header-avatar">AZ</div>
+            <div class="wa-header-info">
+                <div class="wa-header-name">Alzamil Delivery الزامل للتوصيل</div>
+                <div class="wa-header-status" id="waStatus">متصل</div>
+            </div>
+            <div class="wa-header-actions">
+                <i class="bi bi-camera-video"></i>
+                <i class="bi bi-telephone"></i>
+                <i class="bi bi-three-dots-vertical"></i>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="wa-chat" id="waChat">
+            <!-- Date chip -->
+            <div class="wa-date-chip">
+                <span>اليوم</span>
+            </div>
+        </div>
+
+        <!-- Input Bar (decorative) -->
+        <div class="wa-input-bar">
+            <span class="wa-input-emoji"><i class="bi bi-emoji-smile"></i></span>
+            <div class="wa-input-field">اكتب رسالة</div>
+            <span class="wa-input-attach"><i class="bi bi-paperclip"></i></span>
+            <span class="wa-input-mic"><i class="bi bi-mic-fill"></i></span>
+        </div>
+
+    </div>
+
+    <!-- ====== Controls ====== -->
+    <div class="wa-controls">
+        <button class="wa-ctrl-btn replay" id="btnReplay" onclick="replayChat()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            إعادة تشغيل
+        </button>
+
+        <button class="wa-ctrl-btn pause-resume" id="btnPause" onclick="togglePause()">
+            <i class="bi bi-pause-fill" id="pauseIcon"></i>
+            <span id="pauseLabel">إيقاف</span>
+        </button>
+
+        <div class="wa-speed-group">
+            <button class="wa-speed-btn active" data-speed="1" onclick="setSpeed(1, this)">1x</button>
+            <button class="wa-speed-btn" data-speed="2" onclick="setSpeed(2, this)">2x</button>
+            <button class="wa-speed-btn" data-speed="3" onclick="setSpeed(3, this)">3x</button>
+        </div>
+    </div>
+
+    <!-- ====== Footer ====== -->
+    <div style="text-align: center; padding: 1rem 1rem 2rem; color: var(--text-secondary); font-size: 0.85rem;">
+        <p>MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
+    </div>
+
+    <!-- ====== Scripts ====== -->
+    <script src="js/shared.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        /* ================================================
+           MESSAGE DATA
+           ================================================ */
+        var messages = [
+            {
+                id: 1,
+                type: 'sent',
+                text: 'مرحباً عبدالله! \u{1F44B} تم استلام طلبك #AZ-2026-0847 (خزان عمودي 10,000 لتر). لجدولة التوصيل، يرجى إكمال تقييم سريع للموقع (5 دقائق فقط):',
+                time: '2:30 م',
+                hasLinkPreview: true,
+                linkPreview: {
+                    icon: '\u{1F4CB}',
+                    title: 'تقييم جاهزية الموقع - ASDP',
+                    desc: 'أجب على 7 أسئلة سريعة لتقييم موقع التوصيل وتحديد أفضل طريقة للتوصيل',
+                    url: 'asdp.alzamil.com/sra'
+                }
+            },
+            {
+                id: 2,
+                type: 'received',
+                text: 'تم، أكملت التقييم \u2705',
+                time: '2:37 م'
+            },
+            {
+                id: 3,
+                type: 'sent',
+                text: 'شكراً! جاري مراجعة الموقع... ستسمع منا خلال ساعتين.',
+                time: '2:38 م'
+            },
+            {
+                id: 4,
+                type: 'sent',
+                text: 'أخبار رائعة! \u{1F389} تقييم موقعك: أخضر \u2705 (جاهز للتوصيل). التوصيل مجدول الليلة بين الساعة 9-11 مساءً. بدون تصاريح مطلوبة!',
+                time: '4:15 م'
+            },
+            {
+                id: 5,
+                type: 'received',
+                text: 'ممتاز! شكراً \u{1F44D}',
+                time: '4:18 م'
+            },
+            {
+                id: 6,
+                type: 'sent',
+                text: '\u23F0 تذكير: توصيلك الليلة بين 9-11 مساءً.\n\nيرجى التأكد من:\n\u2705 فتح البوابة الرئيسية\n\u2705 إزالة أي سيارات من أمام المبنى\n\u2705 إضاءة المدخل',
+                time: '8:00 م'
+            },
+            {
+                id: 7,
+                type: 'sent',
+                text: '\u{1F69B} السائق أحمد في الطريق!\n\nالوصول المتوقع: 23 دقيقة\nرقم الشاحنة: أ ب ج 1234\n\n\u{1F4CD} تتبع مباشر: [رابط التتبع]',
+                time: '9:12 م'
+            },
+            {
+                id: 8,
+                type: 'sent',
+                text: '\u2705 تم توصيل الخزان بنجاح!\n\n\u23F0 الساعة: 10:15 مساءً\n\u{1F4CD} الموقع: حي النرجس، الرياض\n\u{1F69B} السائق: أحمد المحمدي\n\nالخزان موضوع في المكان المتفق عليه. الشاحنة ستعود غداً 8-10 صباحاً لرفع الخزان وتركيبه على السطح.',
+                time: '10:17 م',
+                hasPhoto: true
+            },
+            {
+                id: 9,
+                type: 'received',
+                text: 'تم الاستلام، شكراً! الخزان موجود \u{1F44D}',
+                time: '10:20 م'
+            },
+            {
+                id: 10,
+                type: 'sent',
+                text: 'شكراً لك عبدالله! \u{1F60A}\n\nكيف تقيم تجربة التوصيل؟\n\u2B50\u2B50\u2B50\u2B50\u2B50\n\nرأيك يهمنا لتحسين خدماتنا.',
+                time: '10:21 م'
+            }
+        ];
+
+        /* ================================================
+           STATE
+           ================================================ */
+        var currentIndex = 0;
+        var speed = 1;
+        var isPaused = false;
+        var timers = [];
+        var isPlaying = false;
+        var totalMessages = messages.length;
+
+        /* ================================================
+           DOM REFERENCES
+           ================================================ */
+        var chatEl = document.getElementById('waChat');
+        var progressFill = document.getElementById('progressFill');
+        var progressText = document.getElementById('progressText');
+        var waStatus = document.getElementById('waStatus');
+        var btnPause = document.getElementById('btnPause');
+        var pauseIcon = document.getElementById('pauseIcon');
+        var pauseLabel = document.getElementById('pauseLabel');
+
+        /* ================================================
+           HELPERS
+           ================================================ */
+        function delay(ms) {
+            return ms / speed;
+        }
+
+        function scrollToBottom() {
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function updateProgress() {
+            var pct = (currentIndex / totalMessages) * 100;
+            progressFill.style.width = pct + '%';
+            progressText.textContent = currentIndex + ' / ' + totalMessages;
+        }
+
+        function clearAllTimers() {
+            for (var i = 0; i < timers.length; i++) {
+                clearTimeout(timers[i]);
+            }
+            timers = [];
+        }
+
+        /* ================================================
+           BUILD MESSAGE HTML
+           ================================================ */
+        function buildBubbleHTML(msg) {
+            var html = '';
+
+            // Photo attachment (before text for message 8)
+            if (msg.hasPhoto) {
+                html += '<div class="wa-photo">';
+                html += '<div class="wa-photo-icon"><i class="bi bi-image"></i></div>';
+                html += '<div class="wa-photo-label">صورة الخزان بعد التوصيل</div>';
+                html += '</div>';
+            }
+
+            // Link preview (for message 1)
+            if (msg.hasLinkPreview && msg.linkPreview) {
+                var lp = msg.linkPreview;
+                html += '<div class="wa-link-preview">';
+                html += '<div class="wa-link-preview-img">' + lp.icon + '</div>';
+                html += '<div class="wa-link-preview-body">';
+                html += '<div class="wa-link-preview-title">' + lp.title + '</div>';
+                html += '<div class="wa-link-preview-desc">' + lp.desc + '</div>';
+                html += '<div class="wa-link-preview-url">' + lp.url + '</div>';
+                html += '</div>';
+                html += '</div>';
+            }
+
+            // Text
+            var escapedText = msg.text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
+
+            // Make link text look like WhatsApp links
+            escapedText = escapedText.replace(
+                /\[رابط التتبع\]/g,
+                '<span style="color:#027eb5;text-decoration:underline;cursor:pointer;">asdp.alzamil.com/track/AZ-2026-0847</span>'
+            );
+            escapedText = escapedText.replace(
+                /🔗 تقييم الموقع/g,
+                '<span style="color:#027eb5;text-decoration:underline;cursor:pointer;">\u{1F517} تقييم الموقع</span>'
+            );
+
+            html += '<div class="wa-text">';
+            html += escapedText;
+
+            // Spacer so text doesn't overlap timestamp
+            if (msg.type === 'sent') {
+                html += '<span class="wa-text-spacer"></span>';
+            } else {
+                html += '<span class="wa-text-spacer"></span>';
+            }
+            html += '</div>';
+
+            // Timestamp + ticks
+            html += '<div class="wa-meta">';
+            if (msg.type === 'sent') {
+                html += '<span class="wa-ticks">\u2713\u2713</span>';
+            }
+            html += '<span class="wa-time">' + msg.time + '</span>';
+            html += '</div>';
+
+            return html;
+        }
+
+        /* ================================================
+           TYPING INDICATOR
+           ================================================ */
+        function showTyping() {
+            // Update header status
+            waStatus.textContent = 'يكتب...';
+
+            var row = document.createElement('div');
+            row.className = 'wa-typing-row';
+            row.id = 'typingIndicator';
+
+            var bubble = document.createElement('div');
+            bubble.className = 'wa-typing-bubble';
+            bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+            row.appendChild(bubble);
+            chatEl.appendChild(row);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            waStatus.textContent = 'متصل';
+            var el = document.getElementById('typingIndicator');
+            if (el) el.remove();
+        }
+
+        /* ================================================
+           ADD MESSAGE
+           ================================================ */
+        function addMessage(msg) {
+            var row = document.createElement('div');
+            row.className = 'wa-msg-row ' + msg.type;
+
+            var bubble = document.createElement('div');
+            bubble.className = 'wa-bubble';
+            bubble.innerHTML = buildBubbleHTML(msg);
+
+            row.appendChild(bubble);
+            chatEl.appendChild(row);
+
+            currentIndex++;
+            updateProgress();
+            scrollToBottom();
+        }
+
+        /* ================================================
+           PLAY SEQUENCE
+           ================================================ */
+        function playSequence() {
+            if (isPlaying) return;
+            isPlaying = true;
+            isPaused = false;
+            currentIndex = 0;
+            updatePauseButton();
+
+            // Calculate cumulative times
+            // Each message: typing delay + typing duration + small gap
+            var cumulativeDelay = delay(1500); // Initial delay
+
+            for (var i = 0; i < messages.length; i++) {
+                (function (index, startDelay) {
+                    var msg = messages[index];
+
+                    // Only show typing for sent (ASDP) messages
+                    var typingDuration;
+                    if (msg.type === 'sent') {
+                        // Longer messages get slightly longer typing
+                        typingDuration = delay(1200 + Math.min(msg.text.length * 3, 800));
+
+                        // Show typing
+                        var t1 = setTimeout(function () {
+                            if (isPaused) return;
+                            showTyping();
+                        }, startDelay);
+                        timers.push(t1);
+
+                        // Hide typing + show message
+                        var t2 = setTimeout(function () {
+                            if (isPaused) return;
+                            hideTyping();
+                            addMessage(msg);
+                            // Check if last message
+                            if (index === messages.length - 1) {
+                                isPlaying = false;
+                            }
+                        }, startDelay + typingDuration);
+                        timers.push(t2);
+
+                    } else {
+                        // Customer messages: slight delay, no typing indicator shown from ASDP side
+                        typingDuration = delay(800);
+
+                        var t3 = setTimeout(function () {
+                            if (isPaused) return;
+                            addMessage(msg);
+                            if (index === messages.length - 1) {
+                                isPlaying = false;
+                            }
+                        }, startDelay + typingDuration);
+                        timers.push(t3);
+                    }
+
+                })(i, cumulativeDelay);
+
+                // Calculate next message start time
+                var msg = messages[i];
+                if (msg.type === 'sent') {
+                    var typDur = delay(1200 + Math.min(msg.text.length * 3, 800));
+                    cumulativeDelay += typDur + delay(600);
+                } else {
+                    cumulativeDelay += delay(800) + delay(600);
+                }
+            }
+        }
+
+        /* ================================================
+           CONTROLS
+           ================================================ */
+
+        // Replay
+        window.replayChat = function () {
+            clearAllTimers();
+            hideTyping();
+            isPlaying = false;
+            isPaused = false;
+            currentIndex = 0;
+            updateProgress();
+            updatePauseButton();
+
+            // Clear chat except date chip
+            chatEl.innerHTML = '<div class="wa-date-chip"><span>اليوم</span></div>';
+
+            // Restart
+            setTimeout(function () {
+                playSequence();
+            }, 300);
+        };
+
+        // Pause / Resume
+        window.togglePause = function () {
+            if (!isPlaying && !isPaused) return;
+
+            if (isPaused) {
+                // Resume: replay remaining messages
+                isPaused = false;
+                updatePauseButton();
+                resumeFromCurrent();
+            } else {
+                // Pause
+                isPaused = true;
+                clearAllTimers();
+                hideTyping();
+                updatePauseButton();
+            }
+        };
+
+        function resumeFromCurrent() {
+            // Re-play from currentIndex
+            isPlaying = true;
+            var resumeDelay = delay(500);
+
+            for (var i = currentIndex; i < messages.length; i++) {
+                (function (index, startDelay) {
+                    var msg = messages[index];
+                    var typingDuration;
+
+                    if (msg.type === 'sent') {
+                        typingDuration = delay(1200 + Math.min(msg.text.length * 3, 800));
+
+                        var t1 = setTimeout(function () {
+                            if (isPaused) return;
+                            showTyping();
+                        }, startDelay);
+                        timers.push(t1);
+
+                        var t2 = setTimeout(function () {
+                            if (isPaused) return;
+                            hideTyping();
+                            addMessage(msg);
+                            if (index === messages.length - 1) isPlaying = false;
+                        }, startDelay + typingDuration);
+                        timers.push(t2);
+
+                    } else {
+                        typingDuration = delay(800);
+                        var t3 = setTimeout(function () {
+                            if (isPaused) return;
+                            addMessage(msg);
+                            if (index === messages.length - 1) isPlaying = false;
+                        }, startDelay + typingDuration);
+                        timers.push(t3);
+                    }
+
+                })(i, resumeDelay);
+
+                var msg = messages[i];
+                if (msg.type === 'sent') {
+                    var typDur = delay(1200 + Math.min(msg.text.length * 3, 800));
+                    resumeDelay += typDur + delay(600);
+                } else {
+                    resumeDelay += delay(800) + delay(600);
+                }
+            }
+        }
+
+        function updatePauseButton() {
+            if (isPaused) {
+                btnPause.classList.add('paused');
+                pauseIcon.className = 'bi bi-play-fill';
+                pauseLabel.textContent = 'استئناف';
+            } else {
+                btnPause.classList.remove('paused');
+                pauseIcon.className = 'bi bi-pause-fill';
+                pauseLabel.textContent = 'إيقاف';
+            }
+        }
+
+        // Speed
+        window.setSpeed = function (s, btn) {
+            speed = s;
+
+            // Update active button
+            var speedBtns = document.querySelectorAll('.wa-speed-btn');
+            for (var i = 0; i < speedBtns.length; i++) {
+                speedBtns[i].classList.remove('active');
+            }
+            btn.classList.add('active');
+
+            // If currently playing, restart from current position
+            if (isPlaying && !isPaused) {
+                clearAllTimers();
+                hideTyping();
+                isPlaying = false;
+                resumeFromCurrent();
+            }
+        };
+
+        /* ================================================
+           INIT
+           ================================================ */
+        updateProgress();
+        playSequence();
+
+    })();
+    </script>
+</body>
+</html>

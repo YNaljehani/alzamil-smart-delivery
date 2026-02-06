@@ -1,0 +1,2296 @@
+/* ============================================
+   ASDP - Site Readiness Assessment (SRA) Form
+   7-Step Wizard | Mobile-First | Arabic RTL
+   ============================================ */
+
+/* ------------------------------------------------
+   0. SRA-SPECIFIC VARIABLES
+   ------------------------------------------------ */
+:root {
+    --sra-step-active: var(--alzamil-blue-light);
+    --sra-step-completed: var(--alzamil-green);
+    --sra-step-upcoming: #bdc3c7;
+    --sra-step-upcoming-bg: #ecf0f1;
+    --sra-card-radius: 0.875rem;
+    --sra-transition-speed: 0.35s;
+    --sra-bottom-bar-height: 4.5rem;
+    --sra-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --sra-max-width: 30rem; /* 480px */
+    --sra-option-border: 2px solid var(--border-light);
+    --sra-option-selected-border: 2px solid var(--alzamil-blue-light);
+    --sra-option-selected-bg: rgba(41, 128, 185, 0.06);
+    --sra-overlay-bg: rgba(13, 47, 74, 0.92);
+    --sra-photo-box-size: 9rem;
+    --sra-score-size: 7.5rem; /* 120px */
+}
+
+
+/* ------------------------------------------------
+   1. STEP PROGRESS INDICATOR
+   ------------------------------------------------ */
+.sra-progress {
+    position: sticky;
+    top: var(--nav-height);
+    z-index: 100;
+    background: #ffffff;
+    padding: 1rem 1rem 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sra-progress__track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: var(--sra-max-width);
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Connecting line behind the circles */
+.sra-progress__track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    left: 1rem;
+    height: 2px;
+    background: var(--sra-step-upcoming-bg);
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
+/* Completed portion overlay line */
+.sra-progress__fill {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    height: 2px;
+    background: var(--sra-step-completed);
+    transform: translateY(-50%);
+    z-index: 1;
+    transition: width var(--sra-transition-speed) ease;
+    width: 0;
+}
+
+.sra-progress__step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    cursor: pointer;
+}
+
+.sra-progress__circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid var(--sra-step-upcoming);
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--sra-step-upcoming);
+    transition: all var(--sra-transition-speed) ease;
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* Active step */
+.sra-progress__step.is-active .sra-progress__circle {
+    border-color: var(--sra-step-active);
+    background: var(--sra-step-active);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(41, 128, 185, 0.2);
+    transform: scale(1.1);
+}
+
+/* Completed step */
+.sra-progress__step.is-completed .sra-progress__circle {
+    border-color: var(--sra-step-completed);
+    background: var(--sra-step-completed);
+    color: #ffffff;
+}
+
+/* Checkmark inside completed circle */
+.sra-progress__step.is-completed .sra-progress__circle::after {
+    content: '\2713';
+    font-size: 0.875rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* Hide the step number when completed */
+.sra-progress__step.is-completed .sra-progress__number {
+    display: none;
+}
+
+/* Step label below circle */
+.sra-progress__label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 3.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color var(--sra-transition-speed) ease;
+}
+
+.sra-progress__step.is-active .sra-progress__label {
+    color: var(--sra-step-active);
+    font-weight: 700;
+}
+
+.sra-progress__step.is-completed .sra-progress__label {
+    color: var(--sra-step-completed);
+    font-weight: 600;
+}
+
+
+/* ------------------------------------------------
+   2. STEP CONTAINER
+   ------------------------------------------------ */
+.sra-wizard {
+    max-width: var(--sra-max-width);
+    margin: 0 auto;
+    padding-bottom: calc(var(--sra-bottom-bar-height) + var(--sra-safe-area-bottom) + 1rem);
+    min-height: calc(100vh - var(--nav-height) - 4rem);
+    position: relative;
+}
+
+.sra-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity var(--sra-transition-speed) ease,
+                transform var(--sra-transition-speed) ease;
+    padding: 1.25rem 1rem;
+}
+
+/* RTL: slide from left on forward navigation */
+.sra-step.is-visible {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+    animation: sra-slideInRTL var(--sra-transition-speed) ease-out;
+}
+
+/* Reverse animation when going back */
+.sra-step.is-visible.slide-back {
+    animation: sra-slideInLTR var(--sra-transition-speed) ease-out;
+}
+
+@keyframes sra-slideInRTL {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes sra-slideInLTR {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.sra-step__title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem;
+}
+
+.sra-step__subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+}
+
+
+/* ------------------------------------------------
+   3. WELCOME SCREEN (Step 1)
+   ------------------------------------------------ */
+.sra-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    min-height: 60vh;
+}
+
+.sra-welcome__icon {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--alzamil-blue), var(--alzamil-blue-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(26, 82, 118, 0.25);
+    animation: sra-welcomePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes sra-welcomePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 30px rgba(26, 82, 118, 0.25);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(26, 82, 118, 0.35);
+    }
+}
+
+.sra-welcome__greeting {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+}
+
+.sra-welcome__description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 20rem;
+    margin: 0 auto 2rem;
+}
+
+.sra-welcome__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    text-align: right;
+    width: 100%;
+    max-width: 18rem;
+}
+
+.sra-welcome__features li {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.sra-welcome__features li .feature-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--score-green-bg);
+    color: var(--score-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.sra-welcome__start-btn {
+    background: linear-gradient(135deg, var(--alzamil-blue), var(--alzamil-blue-light));
+    color: #ffffff;
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 0.875rem;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(26, 82, 118, 0.3);
+}
+
+.sra-welcome__start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(26, 82, 118, 0.4);
+}
+
+.sra-welcome__start-btn:active {
+    transform: translateY(0);
+}
+
+
+/* ------------------------------------------------
+   4. MAP STEP
+   ------------------------------------------------ */
+.sra-map {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.sra-map__container {
+    width: 100%;
+    height: 18.75rem; /* 300px */
+    border-radius: var(--sra-card-radius);
+    overflow: hidden;
+    position: relative;
+    background: #e8e8e8;
+    border: 1px solid var(--border-light);
+}
+
+.sra-map__container iframe,
+.sra-map__container .map-canvas {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Floating instruction bar at top of map */
+.sra-map__instruction {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sra-map__instruction .instruction-icon {
+    color: var(--alzamil-blue-light);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* Center pin overlay - absolute positioned in center of map */
+.sra-map__pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    z-index: 5;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+    transition: transform 0.2s ease;
+}
+
+.sra-map__pin svg {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+/* Pin bounce when map is being moved */
+.sra-map__pin.is-dragging {
+    transform: translate(-50%, -120%);
+}
+
+.sra-map__pin.is-dropped {
+    animation: sra-pinDrop 0.4s ease-out;
+}
+
+@keyframes sra-pinDrop {
+    0% {
+        transform: translate(-50%, -140%);
+    }
+    60% {
+        transform: translate(-50%, -95%);
+    }
+    80% {
+        transform: translate(-50%, -105%);
+    }
+    100% {
+        transform: translate(-50%, -100%);
+    }
+}
+
+/* Pin shadow on the map surface */
+.sra-map__pin-shadow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.75rem;
+    height: 0.375rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Address display below map */
+.sra-map__address {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--sra-card-radius);
+    padding: 1rem;
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.sra-map__address-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    background: rgba(41, 128, 185, 0.1);
+    color: var(--alzamil-blue-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.sra-map__address-text {
+    flex: 1;
+}
+
+.sra-map__address-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 0.125rem;
+}
+
+.sra-map__address-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.sra-map__address-value.is-placeholder {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* GPS locate button */
+.sra-map__locate-btn {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--alzamil-blue-light);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.sra-map__locate-btn:hover {
+    background: var(--alzamil-blue-light);
+    color: #ffffff;
+}
+
+.sra-map__locate-btn.is-loading {
+    animation: sra-spin 1s linear infinite;
+}
+
+@keyframes sra-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+/* ------------------------------------------------
+   5. QUESTION CARDS
+   ------------------------------------------------ */
+.sra-question {
+    margin-bottom: 1.5rem;
+}
+
+.sra-question__counter {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--alzamil-blue-light);
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    background: rgba(41, 128, 185, 0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+}
+
+.sra-question__text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.375rem;
+    line-height: 1.6;
+}
+
+.sra-question__hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem;
+    line-height: 1.5;
+}
+
+/* Reference image within a question */
+.sra-question__ref-image {
+    width: 100%;
+    border-radius: var(--sra-card-radius);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-light);
+}
+
+.sra-question__ref-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.sra-question__ref-image figcaption {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: var(--bg-light);
+    text-align: center;
+}
+
+/* Option cards - large tappable areas */
+.sra-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.sra-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: var(--sra-option-border);
+    border-radius: var(--sra-card-radius);
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.sra-option:hover {
+    border-color: var(--alzamil-blue-light);
+    box-shadow: 0 2px 8px rgba(41, 128, 185, 0.1);
+}
+
+.sra-option:active {
+    transform: scale(0.98);
+}
+
+/* Selected state */
+.sra-option.is-selected {
+    border: var(--sra-option-selected-border);
+    background: var(--sra-option-selected-bg);
+    box-shadow: 0 2px 12px rgba(41, 128, 185, 0.12);
+}
+
+/* Hidden native radio/checkbox */
+.sra-option input[type="radio"],
+.sra-option input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Custom radio indicator */
+.sra-option__indicator {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 2px solid #bdc3c7;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.sra-option.is-selected .sra-option__indicator {
+    border-color: var(--alzamil-blue-light);
+    background: var(--alzamil-blue-light);
+}
+
+/* Checkmark inside selected indicator */
+.sra-option.is-selected .sra-option__indicator::after {
+    content: '\2713';
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.sra-option__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.sra-option__label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+    line-height: 1.5;
+}
+
+.sra-option__description {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.125rem;
+    line-height: 1.4;
+}
+
+/* Option with inline reference image */
+.sra-option__image {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--border-light);
+}
+
+.sra-option__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Option card grid layout (for image-heavy options) */
+.sra-options--grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+}
+
+.sra-options--grid .sra-option {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem 0.75rem;
+}
+
+.sra-options--grid .sra-option__image {
+    width: 100%;
+    height: 5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sra-options--grid .sra-option__indicator {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+
+/* ------------------------------------------------
+   6. PHOTO UPLOAD GRID
+   ------------------------------------------------ */
+.sra-photos {
+    margin-bottom: 1rem;
+}
+
+.sra-photos__guide {
+    background: rgba(41, 128, 185, 0.06);
+    border: 1px solid rgba(41, 128, 185, 0.15);
+    border-radius: var(--sra-card-radius);
+    padding: 0.875rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+}
+
+.sra-photos__guide-icon {
+    font-size: 1.25rem;
+    color: var(--alzamil-blue-light);
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.sra-photos__guide-text {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.sra-photos__guide-image {
+    width: 100%;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-light);
+}
+
+.sra-photos__guide-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 2x2 Grid */
+.sra-photos__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+/* Individual upload box */
+.sra-photo-box {
+    aspect-ratio: 1;
+    border: 2px dashed #bdc3c7;
+    border-radius: var(--sra-card-radius);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.sra-photo-box:hover {
+    border-color: var(--alzamil-blue-light);
+    background: rgba(41, 128, 185, 0.03);
+}
+
+.sra-photo-box:active {
+    transform: scale(0.97);
+}
+
+.sra-photo-box input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.sra-photo-box__icon {
+    font-size: 1.75rem;
+    color: #bdc3c7;
+    margin-bottom: 0.375rem;
+    transition: color 0.2s ease;
+}
+
+.sra-photo-box:hover .sra-photo-box__icon {
+    color: var(--alzamil-blue-light);
+}
+
+.sra-photo-box__label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-align: center;
+    padding: 0 0.5rem;
+    line-height: 1.4;
+}
+
+/* Uploaded state: show thumbnail preview */
+.sra-photo-box.has-photo {
+    border-style: solid;
+    border-color: var(--sra-step-completed);
+    padding: 0;
+}
+
+.sra-photo-box.has-photo .sra-photo-box__icon,
+.sra-photo-box.has-photo .sra-photo-box__label {
+    display: none;
+}
+
+.sra-photo-box__preview {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.sra-photo-box__preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Remove button on uploaded photo */
+.sra-photo-box__remove {
+    position: absolute;
+    top: 0.375rem;
+    left: 0.375rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(231, 76, 60, 0.9);
+    color: #ffffff;
+    border: none;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.15s ease;
+    line-height: 1;
+    padding: 0;
+}
+
+.sra-photo-box__remove:hover {
+    background: #e74c3c;
+    transform: scale(1.1);
+}
+
+/* Success checkmark overlay */
+.sra-photo-box__check {
+    position: absolute;
+    bottom: 0.375rem;
+    right: 0.375rem;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    background: var(--sra-step-completed);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    z-index: 3;
+}
+
+/* Photo counter */
+.sra-photos__count {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sra-photos__count strong {
+    color: var(--alzamil-blue-light);
+    font-weight: 700;
+}
+
+
+/* ------------------------------------------------
+   7. REVIEW SCREEN
+   ------------------------------------------------ */
+.sra-review {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sra-review__card {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--sra-card-radius);
+    overflow: hidden;
+}
+
+.sra-review__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.sra-review__card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sra-review__card-title .review-icon {
+    font-size: 1rem;
+}
+
+.sra-review__edit-btn {
+    background: none;
+    border: 1px solid var(--alzamil-blue-light);
+    color: var(--alzamil-blue-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.sra-review__edit-btn:hover {
+    background: var(--alzamil-blue-light);
+    color: #ffffff;
+}
+
+.sra-review__card-body {
+    padding: 1rem;
+}
+
+.sra-review__item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.sra-review__item:last-child {
+    border-bottom: none;
+}
+
+.sra-review__item-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.sra-review__item-value {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-align: left;
+    max-width: 60%;
+}
+
+/* Review photo thumbnails */
+.sra-review__photos {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.sra-review__photo-thumb {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+
+.sra-review__photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Location review with mini map */
+.sra-review__mini-map {
+    width: 100%;
+    height: 8rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    margin-bottom: 0.5rem;
+    background: #e8e8e8;
+}
+
+.sra-review__mini-map img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Submission confirmation note */
+.sra-review__note {
+    background: rgba(41, 128, 185, 0.06);
+    border: 1px solid rgba(41, 128, 185, 0.15);
+    border-radius: var(--sra-card-radius);
+    padding: 0.875rem 1rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.sra-review__note-icon {
+    color: var(--alzamil-blue-light);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+
+/* ------------------------------------------------
+   8. AI ANALYSIS ANIMATION
+   ------------------------------------------------ */
+.sra-analysis-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--sra-overlay-bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.sra-analysis-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Scanning animation container */
+.sra-analysis__scanner {
+    position: relative;
+    width: 10rem;
+    height: 10rem;
+    margin-bottom: 2rem;
+}
+
+/* Outer pulsing ring */
+.sra-analysis__ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(41, 128, 185, 0.3);
+    animation: sra-pulseRing 2s ease-out infinite;
+}
+
+.sra-analysis__ring:nth-child(2) {
+    animation-delay: 0.5s;
+    border-color: rgba(41, 128, 185, 0.2);
+}
+
+.sra-analysis__ring:nth-child(3) {
+    animation-delay: 1s;
+    border-color: rgba(41, 128, 185, 0.1);
+}
+
+@keyframes sra-pulseRing {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Center circle with icon */
+.sra-analysis__center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--alzamil-blue), var(--alzamil-blue-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #ffffff;
+    box-shadow: 0 0 30px rgba(41, 128, 185, 0.4);
+}
+
+/* Rotating radar sweep */
+.sra-analysis__radar {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    animation: sra-radarSweep 2.5s linear infinite;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 270deg,
+        rgba(41, 128, 185, 0.4) 330deg,
+        rgba(41, 128, 185, 0.6) 360deg
+    );
+    mask: radial-gradient(
+        circle,
+        transparent 38%,
+        black 40%,
+        black 100%
+    );
+    -webkit-mask: radial-gradient(
+        circle,
+        transparent 38%,
+        black 40%,
+        black 100%
+    );
+}
+
+@keyframes sra-radarSweep {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Scanning dots that appear at random positions */
+.sra-analysis__dot {
+    position: absolute;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--alzamil-blue-light);
+    animation: sra-dotBlink 1.5s ease-in-out infinite;
+}
+
+.sra-analysis__dot:nth-child(5) {
+    top: 20%;
+    left: 65%;
+    animation-delay: 0.2s;
+}
+
+.sra-analysis__dot:nth-child(6) {
+    top: 70%;
+    left: 30%;
+    animation-delay: 0.7s;
+}
+
+.sra-analysis__dot:nth-child(7) {
+    top: 40%;
+    left: 80%;
+    animation-delay: 1.1s;
+}
+
+@keyframes sra-dotBlink {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Progress bar */
+.sra-analysis__progress {
+    width: 100%;
+    max-width: 16rem;
+    margin-bottom: 1.5rem;
+}
+
+.sra-analysis__progress-track {
+    width: 100%;
+    height: 0.375rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.sra-analysis__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--alzamil-blue-light), var(--score-green));
+    border-radius: 1rem;
+    transition: width 0.5s ease;
+    width: 0;
+    position: relative;
+}
+
+/* Shimmer effect on the progress fill */
+.sra-analysis__progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: sra-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes sra-shimmer {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.sra-analysis__progress-percent {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* Sequential text messages */
+.sra-analysis__message {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    min-height: 1.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+}
+
+.sra-analysis__message.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sra-analysis__submessage {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    font-weight: 400;
+    text-align: center;
+    margin-top: 0.375rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.sra-analysis__submessage.is-visible {
+    opacity: 1;
+}
+
+
+/* ------------------------------------------------
+   9. SCORE RESULT
+   ------------------------------------------------ */
+.sra-result {
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+/* Large circular score badge */
+.sra-result__score-ring {
+    width: var(--sra-score-size);
+    height: var(--sra-score-size);
+    border-radius: 50%;
+    margin: 0 auto 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: sra-scoreEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transform: scale(0);
+    opacity: 0;
+}
+
+@keyframes sra-scoreEntrance {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Score color fills */
+.sra-result__score-ring.score-green {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    box-shadow: 0 8px 30px rgba(46, 204, 113, 0.35);
+}
+
+.sra-result__score-ring.score-yellow {
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    box-shadow: 0 8px 30px rgba(243, 156, 18, 0.35);
+}
+
+.sra-result__score-ring.score-red {
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.35);
+}
+
+.sra-result__score-ring.score-black {
+    background: linear-gradient(135deg, #1a1a2e, #2c3e50);
+    box-shadow: 0 8px 30px rgba(44, 62, 80, 0.35);
+}
+
+/* Score number inside the ring */
+.sra-result__score-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1;
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* Animated counting of score number */
+.sra-result__score-number.is-counting {
+    animation: sra-countPulse 0.15s ease-in-out infinite alternate;
+}
+
+@keyframes sra-countPulse {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05);
+    }
+}
+
+.sra-result__score-suffix {
+    font-size: 0.875rem;
+    font-weight: 700;
+    display: block;
+    margin-top: -0.125rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Score label and class */
+.sra-result__label {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.sra-result__class-badge {
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.sra-result__class-badge.class-a {
+    background: #d4efdf;
+    color: #1e8449;
+}
+
+.sra-result__class-badge.class-b {
+    background: #d6eaf8;
+    color: #1a5276;
+}
+
+.sra-result__class-badge.class-c-1 {
+    background: #d5f5e3;
+    color: #0e6655;
+}
+
+.sra-result__class-badge.class-c-2 {
+    background: #fdebd0;
+    color: #b7950b;
+}
+
+.sra-result__class-badge.class-d {
+    background: #fadbd8;
+    color: #c0392b;
+}
+
+.sra-result__description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 20rem;
+    margin: 0 auto 1.5rem;
+}
+
+/* Expandable report sections */
+.sra-report {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.sra-report__section {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--sra-card-radius);
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.sra-report__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.sra-report__section-header:hover {
+    background: var(--bg-light);
+}
+
+.sra-report__section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sra-report__section-title .section-icon {
+    font-size: 1rem;
+}
+
+.sra-report__section-toggle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: transform 0.25s ease;
+}
+
+.sra-report__section.is-open .sra-report__section-toggle {
+    transform: rotate(180deg);
+}
+
+.sra-report__section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+    padding: 0 1rem;
+}
+
+.sra-report__section.is-open .sra-report__section-body {
+    max-height: 50rem;
+    padding: 0 1rem 1rem;
+}
+
+.sra-report__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.85rem;
+}
+
+.sra-report__item:last-child {
+    border-bottom: none;
+}
+
+.sra-report__item-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sra-report__item-value {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Score breakdown mini badges in report */
+.sra-report__score-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.sra-report__score-chip.positive {
+    background: var(--score-green-bg);
+    color: #1e8449;
+}
+
+.sra-report__score-chip.neutral {
+    background: var(--score-yellow-bg);
+    color: #b7950b;
+}
+
+.sra-report__score-chip.negative {
+    background: var(--score-red-bg);
+    color: #c0392b;
+}
+
+/* Delivery class badge in result */
+.sra-result__delivery-class {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    padding: 0.75rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--sra-card-radius);
+}
+
+.sra-result__delivery-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Action buttons after result */
+.sra-result__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
+}
+
+.sra-result__actions .btn-brand,
+.sra-result__actions .btn-outline-brand {
+    width: 100%;
+    justify-content: center;
+}
+
+
+/* ------------------------------------------------
+   10. FIXED BOTTOM BUTTON BAR
+   ------------------------------------------------ */
+.sra-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 200;
+    background: #ffffff;
+    border-top: 1px solid var(--border-light);
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + var(--sra-safe-area-bottom));
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.sra-bottom-bar__inner {
+    max-width: var(--sra-max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Next / primary button */
+.sra-bottom-bar__next {
+    flex: 1;
+    background: linear-gradient(135deg, var(--alzamil-blue), var(--alzamil-blue-light));
+    color: #ffffff;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.sra-bottom-bar__next:hover {
+    box-shadow: 0 4px 15px rgba(26, 82, 118, 0.3);
+    transform: translateY(-1px);
+}
+
+.sra-bottom-bar__next:active {
+    transform: translateY(0);
+}
+
+.sra-bottom-bar__next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Submit / final button variant */
+.sra-bottom-bar__next.is-submit {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.sra-bottom-bar__next.is-submit:hover {
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Previous / secondary button */
+.sra-bottom-bar__prev {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+    padding: 0.875rem 1.25rem;
+    border-radius: 0.75rem;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.sra-bottom-bar__prev:hover {
+    background: var(--bg-light);
+    border-color: #bdc3c7;
+    color: var(--text-primary);
+}
+
+.sra-bottom-bar__prev:active {
+    transform: scale(0.97);
+}
+
+/* Arrow icons within buttons - flip for RTL */
+.sra-bottom-bar__next .btn-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.sra-bottom-bar__next:hover .btn-arrow {
+    transform: translateX(-3px);
+}
+
+.sra-bottom-bar__prev .btn-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.sra-bottom-bar__prev:hover .btn-arrow {
+    transform: translateX(3px);
+}
+
+/* Loading state for submit button */
+.sra-bottom-bar__next.is-loading {
+    pointer-events: none;
+    position: relative;
+}
+
+.sra-bottom-bar__next.is-loading .btn-text {
+    visibility: hidden;
+}
+
+.sra-bottom-bar__next.is-loading::after {
+    content: '';
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: sra-spin 0.7s linear infinite;
+}
+
+
+/* ------------------------------------------------
+   UTILITY CLASSES FOR SRA
+   ------------------------------------------------ */
+
+/* Validation error on fields */
+.sra-field-error {
+    border-color: var(--score-red) !important;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12) !important;
+}
+
+.sra-error-message {
+    color: var(--score-red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Success highlight */
+.sra-field-success {
+    border-color: var(--sra-step-completed) !important;
+}
+
+/* Skeleton loading placeholder */
+.sra-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: sra-skeletonShimmer 1.5s ease-in-out infinite;
+    border-radius: 0.5rem;
+}
+
+@keyframes sra-skeletonShimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Fade in/out for step transitions */
+.sra-fade-enter {
+    opacity: 0;
+    transform: translateY(1rem);
+}
+
+.sra-fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.sra-fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sra-fade-exit-active {
+    opacity: 0;
+    transform: translateY(-1rem);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Note / info callout */
+.sra-info-callout {
+    background: rgba(41, 128, 185, 0.06);
+    border-right: 3px solid var(--alzamil-blue-light);
+    border-radius: 0 var(--sra-card-radius) var(--sra-card-radius) 0;
+    padding: 0.875rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.sra-info-callout .callout-icon {
+    color: var(--alzamil-blue-light);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* Text input styling for SRA forms */
+.sra-text-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-light);
+    border-radius: var(--sra-card-radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    direction: rtl;
+}
+
+.sra-text-input::placeholder {
+    color: #bdc3c7;
+}
+
+.sra-text-input:focus {
+    outline: none;
+    border-color: var(--alzamil-blue-light);
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
+}
+
+/* Textarea variant */
+.sra-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-light);
+    border-radius: var(--sra-card-radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: #ffffff;
+    resize: vertical;
+    min-height: 5rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    direction: rtl;
+}
+
+.sra-textarea:focus {
+    outline: none;
+    border-color: var(--alzamil-blue-light);
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
+}
+
+
+/* ------------------------------------------------
+   RESPONSIVE: TABLET (min-width: 600px)
+   ------------------------------------------------ */
+@media (min-width: 37.5rem) {
+    .sra-progress {
+        padding: 1.25rem 1.5rem 1rem;
+    }
+
+    .sra-progress__circle {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 0.8rem;
+    }
+
+    .sra-progress__label {
+        font-size: 0.7rem;
+        max-width: 5rem;
+    }
+
+    .sra-step {
+        padding: 1.5rem;
+    }
+
+    .sra-step__title {
+        font-size: 1.4rem;
+    }
+
+    .sra-map__container {
+        height: 22rem;
+        border-radius: 1rem;
+    }
+
+    .sra-photos__grid {
+        gap: 1rem;
+    }
+
+    .sra-photo-box {
+        aspect-ratio: 1;
+    }
+
+    .sra-welcome {
+        padding: 3rem 1.5rem;
+    }
+
+    .sra-welcome__icon {
+        width: 7rem;
+        height: 7rem;
+        font-size: 3rem;
+    }
+
+    .sra-welcome__greeting {
+        font-size: 1.75rem;
+    }
+
+    .sra-result__score-ring {
+        width: 9rem;
+        height: 9rem;
+    }
+
+    .sra-result__score-number {
+        font-size: 3rem;
+    }
+
+    .sra-result__actions {
+        flex-direction: row;
+    }
+
+    .sra-result__actions .btn-brand,
+    .sra-result__actions .btn-outline-brand {
+        width: auto;
+        flex: 1;
+    }
+}
+
+
+/* ------------------------------------------------
+   RESPONSIVE: DESKTOP (min-width: 768px)
+   ------------------------------------------------ */
+@media (min-width: 48rem) {
+    .sra-wizard {
+        padding-bottom: 2rem;
+    }
+
+    .sra-step {
+        padding: 2rem;
+    }
+
+    .sra-map__container {
+        height: 25rem;
+    }
+
+    .sra-photos__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .sra-photo-box {
+        aspect-ratio: 4 / 3;
+    }
+
+    .sra-option {
+        padding: 1.125rem 1.25rem;
+    }
+
+    .sra-option:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Bottom bar becomes inline on desktop */
+    .sra-bottom-bar {
+        position: sticky;
+        box-shadow: none;
+        border-top: 1px solid var(--border-light);
+        background: transparent;
+        padding-bottom: 0.75rem;
+    }
+
+    .sra-bottom-bar__next {
+        padding: 0.875rem 2.5rem;
+    }
+
+    .sra-analysis__scanner {
+        width: 12rem;
+        height: 12rem;
+    }
+
+    .sra-analysis__center {
+        width: 6rem;
+        height: 6rem;
+        font-size: 2.5rem;
+    }
+
+    /* Review cards in 2 columns on desktop */
+    .sra-review {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Span full width for location card */
+    .sra-review__card.is-full-width {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/* ------------------------------------------------
+   RESPONSIVE: LARGE DESKTOP (min-width: 1024px)
+   ------------------------------------------------ */
+@media (min-width: 64rem) {
+    .sra-wizard {
+        max-width: 36rem;
+    }
+
+    .sra-progress__track {
+        max-width: 36rem;
+    }
+
+    .sra-bottom-bar__inner {
+        max-width: 36rem;
+    }
+}
+
+
+/* ------------------------------------------------
+   ACCESSIBILITY & REDUCED MOTION
+   ------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+    .sra-step,
+    .sra-step.is-visible,
+    .sra-step.is-visible.slide-back,
+    .sra-progress__circle,
+    .sra-progress__fill,
+    .sra-option,
+    .sra-photo-box,
+    .sra-report__section-body,
+    .sra-report__section-toggle,
+    .sra-analysis__message,
+    .sra-analysis__submessage {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .sra-welcome__icon {
+        animation: none !important;
+    }
+
+    .sra-result__score-ring {
+        animation: none !important;
+        transform: scale(1) !important;
+        opacity: 1 !important;
+    }
+
+    .sra-result__score-number.is-counting {
+        animation: none !important;
+    }
+
+    .sra-analysis__ring {
+        animation: none !important;
+    }
+
+    .sra-analysis__radar {
+        animation: none !important;
+    }
+
+    .sra-analysis__dot {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    .sra-analysis__progress-fill::after {
+        animation: none !important;
+    }
+}
+
+
+/* ------------------------------------------------
+   FOCUS VISIBLE (keyboard navigation)
+   ------------------------------------------------ */
+.sra-option:focus-visible {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: 2px;
+}
+
+.sra-photo-box:focus-visible {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: 2px;
+}
+
+.sra-report__section-header:focus-visible {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: -2px;
+}
+
+.sra-bottom-bar__next:focus-visible,
+.sra-bottom-bar__prev:focus-visible {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: 2px;
+}
+
+.sra-welcome__start-btn:focus-visible {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: 2px;
+}
+
+.sra-review__edit-btn:focus-visible {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: 2px;
+}
+
+.sra-progress__step:focus-visible .sra-progress__circle {
+    outline: 2px solid var(--alzamil-blue-light);
+    outline-offset: 2px;
+}
+
+
+/* ------------------------------------------------
+   DARK MODE SUPPORT (optional)
+   ------------------------------------------------ */
+@media (prefers-color-scheme: dark) {
+    .sra-progress {
+        background: #1e1e2e;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sra-progress__track::before {
+        background: #2a2a3e;
+    }
+
+    .sra-progress__circle {
+        background: #1e1e2e;
+        border-color: #444;
+        color: #888;
+    }
+
+    .sra-progress__label {
+        color: #888;
+    }
+
+    .sra-step__title {
+        color: #e0e0e0;
+    }
+
+    .sra-step__subtitle {
+        color: #999;
+    }
+
+    .sra-option {
+        background: #252538;
+        border-color: #333;
+    }
+
+    .sra-option.is-selected {
+        background: rgba(41, 128, 185, 0.12);
+        border-color: var(--alzamil-blue-light);
+    }
+
+    .sra-option__label {
+        color: #e0e0e0;
+    }
+
+    .sra-option__description {
+        color: #999;
+    }
+
+    .sra-option__indicator {
+        background: #252538;
+        border-color: #555;
+    }
+
+    .sra-photo-box {
+        background: #252538;
+        border-color: #444;
+    }
+
+    .sra-photo-box__icon {
+        color: #666;
+    }
+
+    .sra-photo-box__label {
+        color: #888;
+    }
+
+    .sra-review__card {
+        background: #252538;
+        border-color: #333;
+    }
+
+    .sra-review__card-header {
+        background: #1e1e2e;
+        border-color: #333;
+    }
+
+    .sra-review__card-title {
+        color: #e0e0e0;
+    }
+
+    .sra-review__item {
+        border-color: #333;
+    }
+
+    .sra-review__item-value {
+        color: #e0e0e0;
+    }
+
+    .sra-report__section {
+        background: #252538;
+        border-color: #333;
+    }
+
+    .sra-report__section-title {
+        color: #e0e0e0;
+    }
+
+    .sra-report__item {
+        border-color: #333;
+    }
+
+    .sra-report__item-value {
+        color: #e0e0e0;
+    }
+
+    .sra-map__address {
+        background: #252538;
+        border-color: #333;
+    }
+
+    .sra-map__address-value {
+        color: #e0e0e0;
+    }
+
+    .sra-bottom-bar {
+        background: #1e1e2e;
+        border-color: #333;
+    }
+
+    .sra-bottom-bar__prev {
+        border-color: #444;
+        color: #999;
+    }
+
+    .sra-bottom-bar__prev:hover {
+        background: #2a2a3e;
+        color: #e0e0e0;
+    }
+
+    .sra-welcome__greeting {
+        color: #e0e0e0;
+    }
+
+    .sra-welcome__description {
+        color: #999;
+    }
+
+    .sra-result__label {
+        color: #e0e0e0;
+    }
+
+    .sra-result__delivery-class {
+        background: #252538;
+        border-color: #333;
+    }
+
+    .sra-skeleton {
+        background: linear-gradient(90deg, #2a2a3e 25%, #333 50%, #2a2a3e 75%);
+        background-size: 200% 100%;
+    }
+
+    .sra-text-input,
+    .sra-textarea {
+        background: #252538;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    .sra-text-input::placeholder {
+        color: #666;
+    }
+
+    .sra-info-callout {
+        background: rgba(41, 128, 185, 0.1);
+        color: #e0e0e0;
+    }
+
+    .sra-review__note {
+        background: rgba(41, 128, 185, 0.1);
+        color: #e0e0e0;
+    }
+}

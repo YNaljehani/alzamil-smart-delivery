@@ -1,0 +1,690 @@
+/* ============================================
+   ASDP - WhatsApp Notification Simulation
+   Realistic WhatsApp UI Styling
+   ============================================ */
+
+/* ---- Phone Frame ---- */
+.phone-frame {
+    max-width: 400px;
+    margin: 1.5rem auto;
+    border-radius: 32px;
+    border: 3px solid #1a1a1a;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 2px #333,
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 8px 25px rgba(0, 0, 0, 0.15);
+    background: #000;
+    position: relative;
+}
+
+/* Notch */
+.phone-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 22px;
+    background: #1a1a1a;
+    border-radius: 0 0 18px 18px;
+    z-index: 50;
+}
+
+/* ---- WhatsApp Header ---- */
+.wa-header {
+    background: #075e54;
+    padding: 28px 12px 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    direction: ltr;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.wa-header-back {
+    color: #fff;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.wa-header-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.wa-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.wa-header-name {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wa-header-status {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+.wa-header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.wa-header-actions i {
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+/* ---- Chat Area ---- */
+.wa-chat {
+    background-color: #ece5dd;
+    background-image:
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9bfb0' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    min-height: 520px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 8px 10px 12px;
+    scroll-behavior: smooth;
+    direction: rtl;
+}
+
+/* Scrollbar */
+.wa-chat::-webkit-scrollbar {
+    width: 5px;
+}
+
+.wa-chat::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.wa-chat::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+/* ---- Date Chip ---- */
+.wa-date-chip {
+    text-align: center;
+    margin: 8px 0 12px;
+}
+
+.wa-date-chip span {
+    display: inline-block;
+    background: rgba(225, 218, 208, 0.9);
+    color: #54656f;
+    font-size: 0.72rem;
+    padding: 4px 14px;
+    border-radius: 8px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+    font-weight: 500;
+}
+
+/* ---- Message Rows ---- */
+.wa-msg-row {
+    display: flex;
+    margin-bottom: 3px;
+    animation: msgSlideUp 0.35s ease-out;
+}
+
+.wa-msg-row.sent {
+    justify-content: flex-end;
+}
+
+.wa-msg-row.received {
+    justify-content: flex-start;
+}
+
+@keyframes msgSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- Message Bubbles ---- */
+.wa-bubble {
+    max-width: 82%;
+    padding: 6px 8px 4px 8px;
+    border-radius: 8px;
+    position: relative;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    word-wrap: break-word;
+    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.08);
+}
+
+/* Sent (ASDP - right in RTL) */
+.wa-msg-row.sent .wa-bubble {
+    background: #d9fdd3;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 0;
+    margin-left: 6px;
+}
+
+/* Sent tail */
+.wa-msg-row.sent .wa-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 10px 10px;
+    border-color: transparent transparent transparent #d9fdd3;
+}
+
+/* Received (Customer - left in RTL) */
+.wa-msg-row.received .wa-bubble {
+    background: #ffffff;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 0;
+    margin-right: 6px;
+}
+
+/* Received tail */
+.wa-msg-row.received .wa-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #ffffff transparent transparent;
+}
+
+/* First message of consecutive group shows tail */
+.wa-msg-row.sent + .wa-msg-row.sent .wa-bubble::before,
+.wa-msg-row.received + .wa-msg-row.received .wa-bubble::before {
+    display: none;
+}
+
+.wa-msg-row.sent + .wa-msg-row.sent .wa-bubble {
+    border-top-right-radius: 8px;
+}
+
+.wa-msg-row.received + .wa-msg-row.received .wa-bubble {
+    border-top-left-radius: 8px;
+}
+
+/* ---- Message Text ---- */
+.wa-text {
+    direction: rtl;
+    text-align: right;
+    white-space: pre-wrap;
+    margin-bottom: 2px;
+}
+
+/* ---- Timestamp & Ticks ---- */
+.wa-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+    margin-top: 1px;
+    direction: ltr;
+    float: left;
+    margin-left: 0;
+    padding-left: 0;
+    margin-right: 4px;
+}
+
+.wa-time {
+    font-size: 0.66rem;
+    color: #667781;
+    white-space: nowrap;
+}
+
+.wa-ticks {
+    font-size: 0.78rem;
+    color: #53bdeb;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    letter-spacing: -3px;
+    margin-right: 1px;
+}
+
+.wa-ticks.gray {
+    color: #667781;
+}
+
+/* Clearfix for floated meta */
+.wa-bubble::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+/* Spacer to prevent text overlapping the timestamp */
+.wa-text-spacer {
+    display: inline-block;
+    width: 65px;
+    height: 1px;
+}
+
+.wa-msg-row.sent .wa-text-spacer {
+    width: 78px;
+}
+
+/* ---- Link Preview Card ---- */
+.wa-link-preview {
+    background: #f0efe9;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.wa-msg-row.sent .wa-link-preview {
+    background: #cfeccb;
+}
+
+.wa-link-preview-img {
+    width: 100%;
+    height: 110px;
+    background: linear-gradient(135deg, #1a5276, #2980b9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 2rem;
+}
+
+.wa-link-preview-body {
+    padding: 8px 10px;
+}
+
+.wa-link-preview-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+    margin-bottom: 2px;
+    direction: rtl;
+    text-align: right;
+}
+
+.wa-link-preview-desc {
+    font-size: 0.72rem;
+    color: #667781;
+    line-height: 1.3;
+    direction: rtl;
+    text-align: right;
+}
+
+.wa-link-preview-url {
+    font-size: 0.66rem;
+    color: #8696a0;
+    margin-top: 3px;
+    direction: ltr;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ---- Photo Placeholder ---- */
+.wa-photo {
+    width: 100%;
+    height: 160px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    background: linear-gradient(145deg, #2c3e50, #34495e);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.85);
+    gap: 6px;
+    position: relative;
+}
+
+.wa-photo-icon {
+    font-size: 2.2rem;
+    opacity: 0.9;
+}
+
+.wa-photo-label {
+    font-size: 0.72rem;
+    opacity: 0.7;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.wa-photo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
+}
+
+/* ---- Typing Indicator ---- */
+.wa-typing-row {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 3px;
+    animation: msgSlideUp 0.25s ease-out;
+}
+
+.wa-typing-bubble {
+    background: #ffffff;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.08);
+    margin-right: 6px;
+    position: relative;
+}
+
+/* Typing tail */
+.wa-typing-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #ffffff transparent transparent;
+}
+
+.typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #90a4ae;
+    animation: typingPulse 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: scale(0.85);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ---- WhatsApp Input Bar (decorative) ---- */
+.wa-input-bar {
+    background: #f0f2f5;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    direction: ltr;
+}
+
+.wa-input-field {
+    flex: 1;
+    background: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    color: #667781;
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+}
+
+.wa-input-emoji {
+    color: #54656f;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.wa-input-mic {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #00a884;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.wa-input-attach {
+    color: #54656f;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transform: rotate(45deg);
+}
+
+/* ---- Controls Section ---- */
+.wa-controls {
+    max-width: 400px;
+    margin: 1.2rem auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.wa-ctrl-btn {
+    border: 2px solid var(--alzamil-blue);
+    background: transparent;
+    color: var(--alzamil-blue);
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wa-ctrl-btn:hover {
+    background: var(--alzamil-blue);
+    color: #fff;
+}
+
+.wa-ctrl-btn.active {
+    background: var(--alzamil-blue);
+    color: #fff;
+}
+
+.wa-ctrl-btn.replay {
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+.wa-ctrl-btn.replay:hover {
+    background: #27ae60;
+    color: #fff;
+}
+
+.wa-ctrl-btn.pause-resume {
+    border-color: #e67e22;
+    color: #e67e22;
+}
+
+.wa-ctrl-btn.pause-resume:hover {
+    background: #e67e22;
+    color: #fff;
+}
+
+.wa-ctrl-btn.pause-resume.paused {
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+.wa-ctrl-btn.pause-resume.paused:hover {
+    background: #27ae60;
+    color: #fff;
+}
+
+.wa-speed-group {
+    display: flex;
+    border: 2px solid var(--alzamil-blue);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.wa-speed-btn {
+    border: none;
+    background: transparent;
+    color: var(--alzamil-blue);
+    padding: 8px 14px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 1px solid rgba(26, 82, 118, 0.2);
+}
+
+.wa-speed-btn:first-child {
+    border-left: none;
+}
+
+.wa-speed-btn.active {
+    background: var(--alzamil-blue);
+    color: #fff;
+}
+
+.wa-speed-btn:hover:not(.active) {
+    background: rgba(26, 82, 118, 0.08);
+}
+
+/* ---- Progress Bar ---- */
+.wa-progress-wrap {
+    max-width: 400px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    direction: rtl;
+}
+
+.wa-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.wa-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #075e54, #25d366);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+}
+
+.wa-progress-text {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* ---- Page Layout ---- */
+.wa-page-title {
+    text-align: center;
+    margin: 1.5rem 0 0.5rem;
+}
+
+.wa-page-title h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+}
+
+.wa-page-title p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 440px) {
+    .phone-frame {
+        margin: 1rem 8px;
+        border-radius: 0;
+        border-width: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .phone-frame::before {
+        display: none;
+    }
+
+    .wa-header {
+        padding-top: 12px;
+    }
+
+    .wa-chat {
+        min-height: 450px;
+        max-height: 450px;
+    }
+
+    .wa-controls {
+        padding: 0 12px;
+    }
+}

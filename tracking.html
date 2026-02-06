@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ASDP - تتبع التوصيل #AZ-2026-0847</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link href="css/shared.css" rel="stylesheet">
+    <link href="css/tracking.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="tracking-page" id="trackingPage">
+
+    <!-- Slim Header -->
+    <header class="tracking-header">
+        <div class="header-right">
+            <div class="header-logo">🚛</div>
+            <div class="header-info">
+                <h1>تتبع التوصيل</h1>
+                <p class="order-num">#AZ-2026-0847</p>
+            </div>
+        </div>
+        <a href="index.html" class="back-link" title="العودة">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </header>
+
+    <!-- Map Section -->
+    <div class="map-section">
+        <div id="trackingMap"></div>
+        <div class="eta-badge" id="etaBadge">
+            <i class="bi bi-clock-fill eta-icon"></i>
+            <span id="etaText">الوصول خلال 23 دقيقة</span>
+        </div>
+    </div>
+
+    <!-- Bottom Scrollable Content -->
+    <div class="tracking-content">
+
+        <!-- Order Info Card -->
+        <div class="tracking-card fade-in">
+            <div class="card-title-row">
+                <i class="bi bi-box-seam-fill"></i>
+                معلومات الطلب
+            </div>
+            <div class="info-row">
+                <span class="label">العميل</span>
+                <span class="value">عبدالله الشمري</span>
+            </div>
+            <div class="info-row">
+                <span class="label">المنتج</span>
+                <span class="value">خزان عمودي 10,000 لتر</span>
+            </div>
+            <div class="info-row">
+                <span class="label">الموديل</span>
+                <span class="value" style="direction:ltr; text-align:right;">BV1000</span>
+            </div>
+            <div class="info-row">
+                <span class="label">فئة التوصيل</span>
+                <span class="value">
+                    <span class="class-badge class-c">الفئة ج - توصيل مرحلتين</span>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="label">تقييم الموقع</span>
+                <span class="value">
+                    <span class="score-badge green">
+                        <i class="bi bi-check-circle-fill"></i>
+                        أخضر
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Driver Card -->
+        <div class="tracking-card fade-in" style="animation-delay: 0.1s;">
+            <div class="card-title-row">
+                <i class="bi bi-person-badge-fill"></i>
+                السائق
+            </div>
+            <div class="driver-card">
+                <div class="driver-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="driver-info">
+                    <div class="driver-name">أحمد المحمدي</div>
+                    <div class="driver-vehicle">شاحنة ثقيلة مع رافعة<br>رقم أ ب ج 1234</div>
+                </div>
+                <a href="#" class="driver-phone-btn" onclick="return false;" title="اتصل بالسائق">
+                    <i class="bi bi-telephone-fill"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Status Timeline Card -->
+        <div class="tracking-card fade-in" style="animation-delay: 0.2s;">
+            <div class="card-title-row">
+                <i class="bi bi-list-check"></i>
+                حالة الطلب
+            </div>
+            <ul class="status-timeline" id="statusTimeline">
+                <!-- Step 1: Confirmed -->
+                <li class="timeline-step completed-step" id="step1">
+                    <div class="step-dot completed">
+                        <i class="bi bi-check"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">تم تأكيد الطلب</div>
+                        <div class="step-time">2:30 م</div>
+                        <div class="step-desc">تم استلام طلبك وتسجيله في النظام</div>
+                    </div>
+                </li>
+                <!-- Step 2: SRA Complete -->
+                <li class="timeline-step completed-step" id="step2">
+                    <div class="step-dot completed">
+                        <i class="bi bi-check"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">تقييم الموقع مكتمل</div>
+                        <div class="step-time">3:15 م</div>
+                        <div class="step-desc">تقييم أخضر - الموقع جاهز</div>
+                    </div>
+                </li>
+                <!-- Step 3: Loading -->
+                <li class="timeline-step completed-step" id="step3">
+                    <div class="step-dot completed">
+                        <i class="bi bi-check"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">جاري تحميل الشاحنة</div>
+                        <div class="step-time">8:30 م</div>
+                        <div class="step-desc">الشاحنة في المستودع جاري التحميل</div>
+                    </div>
+                </li>
+                <!-- Step 4: En Route (CURRENT) -->
+                <li class="timeline-step current-step" id="step4">
+                    <div class="step-dot current">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">الشاحنة في الطريق</div>
+                        <div class="step-time">9:15 م</div>
+                        <div class="step-desc">السائق أحمد في الطريق إليك</div>
+                    </div>
+                </li>
+                <!-- Step 5: Arrived (UPCOMING) -->
+                <li class="timeline-step upcoming-step" id="step5">
+                    <div class="step-dot upcoming">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">وصلت الشاحنة</div>
+                        <div class="step-time">~9:45 م</div>
+                        <div class="step-desc">الشاحنة وصلت للموقع</div>
+                    </div>
+                </li>
+                <!-- Step 6: Delivered (UPCOMING) -->
+                <li class="timeline-step upcoming-step" id="step6">
+                    <div class="step-dot upcoming">
+                        <i class="bi bi-check-all"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-label">تم التوصيل</div>
+                        <div class="step-time">--</div>
+                        <div class="step-desc">تم تسليم الخزان بنجاح</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Phase 2 Card -->
+        <div class="phase2-card fade-in" style="animation-delay: 0.3s;">
+            <div class="phase2-header">
+                <span class="phase2-icon">🏗️</span>
+                <span class="phase2-title">المرحلة الثانية: التركيب</span>
+            </div>
+            <div class="phase2-desc">
+                الشاحنة ستعود غداً الخميس 8-10 صباحاً لرفع الخزان وتركيبه على السطح بالرافعة
+            </div>
+            <div class="phase2-status">
+                <i class="bi bi-calendar-event"></i>
+                مجدول
+            </div>
+        </div>
+
+    </div><!-- /tracking-content -->
+
+</div><!-- /tracking-page -->
+
+<!-- Celebration Banner (hidden initially) -->
+<div class="celebration-banner" id="celebrationBanner">
+    <div class="celebration-text">
+        <i class="bi bi-check-circle-fill"></i>
+        تم التوصيل بنجاح!
+    </div>
+</div>
+
+<!-- Confetti Container -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/mock-data.js"></script>
+
+<script>
+(function() {
+    'use strict';
+
+    // ========================================
+    // Configuration
+    // ========================================
+    var WAREHOUSE = [24.7136, 46.6753];
+    var CUSTOMER  = [24.8400, 46.6200];
+    var MOVE_INTERVAL = 1500;   // ms between waypoint steps
+    var INITIAL_ETA = 23;       // minutes
+
+    var waypoints = [
+        [24.7136, 46.6753], [24.7180, 46.6740], [24.7220, 46.6730],
+        [24.7270, 46.6720], [24.7320, 46.6710], [24.7370, 46.6690],
+        [24.7420, 46.6670], [24.7470, 46.6650], [24.7520, 46.6630],
+        [24.7570, 46.6610], [24.7610, 46.6590], [24.7650, 46.6570],
+        [24.7700, 46.6550], [24.7740, 46.6530], [24.7780, 46.6510],
+        [24.7820, 46.6490], [24.7860, 46.6460], [24.7900, 46.6430],
+        [24.7940, 46.6400], [24.7970, 46.6370], [24.8000, 46.6350],
+        [24.8040, 46.6330], [24.8080, 46.6310], [24.8110, 46.6290],
+        [24.8140, 46.6270], [24.8170, 46.6260], [24.8200, 46.6250],
+        [24.8230, 46.6240], [24.8260, 46.6230], [24.8290, 46.6220],
+        [24.8320, 46.6215], [24.8350, 46.6210], [24.8370, 46.6205],
+        [24.8400, 46.6200]
+    ];
+
+    // ========================================
+    // State
+    // ========================================
+    var currentWaypoint = 0;
+    var map, truckMarker, completedRoute, remainingRoute;
+    var animationInterval = null;
+    var delivered = false;
+
+    // ========================================
+    // Initialize Map
+    // ========================================
+    function initMap() {
+        // Create map
+        map = L.map('trackingMap', {
+            zoomControl: false,
+            attributionControl: true
+        });
+
+        // Add zoom control on the left (since page is RTL)
+        L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 18
+        }).addTo(map);
+
+        // Fit map to show warehouse and customer
+        var bounds = L.latLngBounds([WAREHOUSE, CUSTOMER]);
+        map.fitBounds(bounds, { padding: [40, 40] });
+
+        // ---- Warehouse Marker ----
+        var warehouseIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="width:32px;height:32px;background:#2980b9;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><i class="bi bi-building"></i></div>',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -20]
+        });
+
+        L.marker(WAREHOUSE, { icon: warehouseIcon })
+            .addTo(map)
+            .bindPopup('<div class="warehouse-popup"><i class="bi bi-building" style="color:#2980b9;"></i> مستودع الزامل</div>');
+
+        // ---- Customer Marker ----
+        var customerIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="width:32px;height:32px;background:#27ae60;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><i class="bi bi-house-fill"></i></div>',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -20]
+        });
+
+        L.marker(CUSTOMER, { icon: customerIcon })
+            .addTo(map)
+            .bindPopup('<div class="customer-popup"><i class="bi bi-geo-alt-fill" style="color:#27ae60;"></i> موقع التوصيل - حي النرجس</div>');
+
+        // ---- Remaining Route (dashed gray) ----
+        remainingRoute = L.polyline(waypoints, {
+            color: '#bdc3c7',
+            weight: 4,
+            opacity: 0.6,
+            dashArray: '8, 10',
+            lineCap: 'round'
+        }).addTo(map);
+
+        // ---- Completed Route (solid blue) ----
+        completedRoute = L.polyline([], {
+            color: '#2980b9',
+            weight: 5,
+            opacity: 0.9,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }).addTo(map);
+
+        // ---- Truck Marker ----
+        var truckIcon = L.divIcon({
+            className: '',
+            html: '<div class="truck-marker-icon">🚛</div>',
+            iconSize: [42, 42],
+            iconAnchor: [21, 21]
+        });
+
+        truckMarker = L.marker(waypoints[0], {
+            icon: truckIcon,
+            zIndexOffset: 1000
+        }).addTo(map);
+    }
+
+    // ========================================
+    // Animation
+    // ========================================
+    function startAnimation() {
+        // Draw initial completed portion (just the first point)
+        completedRoute.setLatLngs([waypoints[0]]);
+
+        animationInterval = setInterval(function() {
+            if (delivered) return;
+
+            currentWaypoint++;
+
+            if (currentWaypoint >= waypoints.length) {
+                currentWaypoint = waypoints.length - 1;
+                clearInterval(animationInterval);
+                onTruckArrived();
+                return;
+            }
+
+            moveTruck(currentWaypoint);
+            updateETA(currentWaypoint);
+            updateRemainingRoute(currentWaypoint);
+        }, MOVE_INTERVAL);
+    }
+
+    function moveTruck(index) {
+        var pos = waypoints[index];
+
+        // Smooth transition using CSS
+        truckMarker.setLatLng(pos);
+
+        // Update completed route
+        var completed = [];
+        for (var i = 0; i <= index; i++) {
+            completed.push(waypoints[i]);
+        }
+        completedRoute.setLatLngs(completed);
+
+        // Pan map slightly to follow truck (only if truck goes near edge)
+        if (!map.getBounds().pad(-0.15).contains(pos)) {
+            map.panTo(pos, { animate: true, duration: 0.8 });
+        }
+    }
+
+    function updateRemainingRoute(index) {
+        var remaining = [];
+        for (var i = index; i < waypoints.length; i++) {
+            remaining.push(waypoints[i]);
+        }
+        remainingRoute.setLatLngs(remaining);
+    }
+
+    function updateETA(index) {
+        var progress = index / (waypoints.length - 1);
+        var remaining = Math.max(0, Math.round(INITIAL_ETA * (1 - progress)));
+        var etaText = document.getElementById('etaText');
+
+        if (remaining <= 0) {
+            etaText.textContent = 'الوصول الآن...';
+        } else if (remaining === 1) {
+            etaText.textContent = 'الوصول خلال دقيقة واحدة';
+        } else if (remaining === 2) {
+            etaText.textContent = 'الوصول خلال دقيقتين';
+        } else if (remaining <= 10) {
+            etaText.textContent = 'الوصول خلال ' + remaining + ' دقائق';
+        } else {
+            etaText.textContent = 'الوصول خلال ' + remaining + ' دقيقة';
+        }
+    }
+
+    // ========================================
+    // Arrival & Celebration
+    // ========================================
+    function onTruckArrived() {
+        delivered = true;
+
+        // Update step 5: Arrived
+        setTimeout(function() {
+            updateStep('step5', 'completed', '9:43 م');
+            updateStep('step4', 'completed', '9:15 م');
+        }, 500);
+
+        // Update step 6: Delivered after 3 more seconds
+        setTimeout(function() {
+            updateStep('step6', 'completed', '9:45 م');
+            showCelebration();
+        }, 3500);
+    }
+
+    function updateStep(stepId, status, time) {
+        var step = document.getElementById(stepId);
+        if (!step) return;
+
+        var dot = step.querySelector('.step-dot');
+        var timeEl = step.querySelector('.step-time');
+
+        // Remove old classes
+        step.className = 'timeline-step';
+        dot.className = 'step-dot';
+
+        if (status === 'completed') {
+            step.classList.add('completed-step');
+            dot.classList.add('completed');
+            dot.innerHTML = '<i class="bi bi-check"></i>';
+        } else if (status === 'current') {
+            step.classList.add('current-step');
+            dot.classList.add('current');
+        }
+
+        if (time && timeEl) {
+            timeEl.textContent = time;
+        }
+    }
+
+    function showCelebration() {
+        // Update ETA badge
+        var etaBadge = document.getElementById('etaBadge');
+        var etaText = document.getElementById('etaText');
+        etaBadge.classList.add('arrived');
+        etaText.innerHTML = 'تم الوصول <i class="bi bi-check-circle-fill"></i>';
+
+        // Show banner
+        var banner = document.getElementById('celebrationBanner');
+        banner.classList.add('show');
+
+        // Spawn confetti
+        spawnConfetti();
+
+        // Stop truck pulse
+        var truckEl = document.querySelector('.truck-marker-icon');
+        if (truckEl) {
+            truckEl.style.animation = 'none';
+            truckEl.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+        }
+
+        // Hide banner after 8 seconds
+        setTimeout(function() {
+            banner.classList.remove('show');
+        }, 8000);
+    }
+
+    function spawnConfetti() {
+        var container = document.getElementById('confettiContainer');
+        var colors = ['#2ecc71', '#3498db', '#f1c40f', '#e74c3c', '#9b59b6', '#1abc9c', '#e67e22'];
+        var count = 60;
+
+        for (var i = 0; i < count; i++) {
+            (function(index) {
+                setTimeout(function() {
+                    var confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = (Math.random() * 100) + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (Math.random() * 8 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 8 + 5) + 'px';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    confetti.style.animationDelay = '0s';
+                    if (Math.random() > 0.5) {
+                        confetti.style.borderRadius = '50%';
+                    }
+                    container.appendChild(confetti);
+
+                    // Remove after animation
+                    setTimeout(function() {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, 4000);
+                }, index * 30);
+            })(i);
+        }
+    }
+
+    // ========================================
+    // Boot
+    // ========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+
+        // Start animation after a brief delay
+        setTimeout(function() {
+            startAnimation();
+        }, 1000);
+    });
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ASDP - تقييم جاهزية الموقع</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link href="css/shared.css" rel="stylesheet">
+    <link href="css/sra-form.css" rel="stylesheet">
+    <style>
+        /* ============================================
+           SRA Form - Inline Styles (sra-form.css fallback)
+           7-Step Wizard, Mobile-First, Arabic RTL
+           ============================================ */
+
+        /* ---- Page Layout ---- */
+        .sra-page {
+            min-height: 100vh;
+            padding-bottom: 90px;
+            background: var(--bg-light);
+        }
+
+        /* ---- Step Progress Indicator ---- */
+        .step-progress {
+            background: white;
+            padding: 16px 12px 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .step-progress-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .step-circle-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 0 0 auto;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            border: 2px solid #dee2e6;
+            background: white;
+            color: #adb5bd;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .step-circle.active {
+            border-color: var(--alzamil-blue);
+            background: var(--alzamil-blue);
+            color: white;
+            box-shadow: 0 2px 10px rgba(26,82,118,0.3);
+            transform: scale(1.1);
+        }
+
+        .step-circle.completed {
+            border-color: var(--score-green);
+            background: var(--score-green);
+            color: white;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: #dee2e6;
+            min-width: 12px;
+            transition: background 0.3s;
+            z-index: 1;
+        }
+
+        .step-line.completed {
+            background: var(--score-green);
+        }
+
+        .step-label {
+            font-size: 0.6rem;
+            color: #adb5bd;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        .step-circle.active + .step-label,
+        .step-circle-wrap.active-wrap .step-label {
+            color: var(--alzamil-blue);
+            font-weight: 700;
+        }
+
+        .step-circle-wrap.completed-wrap .step-label {
+            color: var(--score-green);
+        }
+
+        /* ---- Steps Container ---- */
+        .step-content {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---- Step 1 Welcome ---- */
+        .welcome-container {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .welcome-logo {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--alzamil-blue-dark), var(--alzamil-blue-light));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            margin: 1rem auto 1.5rem;
+            box-shadow: 0 8px 25px rgba(26,82,118,0.25);
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-light);
+            margin-bottom: 1.5rem;
+            text-align: start;
+        }
+
+        .order-info-card .order-id {
+            font-weight: 800;
+            color: var(--alzamil-blue);
+            font-size: 0.95rem;
+        }
+
+        .order-info-card .order-product {
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .order-info-card .order-customer {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+
+        .time-estimate {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .time-estimate i {
+            color: var(--alzamil-blue-light);
+        }
+
+        .btn-start {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            border-radius: 14px;
+        }
+
+        /* ---- Step 2 Map ---- */
+        .map-container {
+            position: relative;
+        }
+
+        #sra-map {
+            width: 100%;
+            height: 55vh;
+            min-height: 350px;
+            z-index: 1;
+        }
+
+        .map-center-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+            z-index: 1000;
+            font-size: 2.5rem;
+            color: var(--score-red);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            pointer-events: none;
+            transition: transform 0.15s;
+        }
+
+        .map-center-pin.bouncing {
+            animation: pinBounce 0.3s ease;
+        }
+
+        @keyframes pinBounce {
+            0%, 100% { transform: translate(-50%, -100%); }
+            50% { transform: translate(-50%, -110%); }
+        }
+
+        .map-center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: var(--score-red);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .map-instruction {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .map-instruction i {
+            color: var(--alzamil-blue-light);
+        }
+
+        .location-details {
+            padding: 1.2rem 1.5rem;
+            background: white;
+        }
+
+        .address-display {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .coords-display {
+            font-size: 0.75rem;
+            color: #adb5bd;
+            font-family: monospace;
+            direction: ltr;
+            text-align: right;
+            margin-bottom: 12px;
+        }
+
+        .landmark-input {
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .landmark-input:focus {
+            outline: none;
+            border-color: var(--alzamil-blue-light);
+        }
+
+        .location-confirm-btn {
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        /* ---- Step 3 Questions ---- */
+        .question-container {
+            padding: 1.2rem 1.5rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .question-progress {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .question-counter {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .question-progress-bar {
+            flex: 1;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            margin-right: 12px;
+            overflow: hidden;
+        }
+
+        .question-progress-fill {
+            height: 100%;
+            background: var(--alzamil-blue-light);
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+        }
+
+        .question-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .option-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-card {
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .option-card:hover {
+            border-color: var(--alzamil-blue-light);
+            background: #f0f7ff;
+        }
+
+        .option-card.selected {
+            border-color: var(--alzamil-blue);
+            background: #e8f2fb;
+            box-shadow: 0 0 0 3px rgba(26,82,118,0.12);
+        }
+
+        .option-card .option-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 40px;
+            text-align: center;
+        }
+
+        .option-card .option-label {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .option-card .option-check {
+            margin-right: auto;
+            margin-left: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .option-card.selected .option-check {
+            border-color: var(--alzamil-blue);
+            background: var(--alzamil-blue);
+            color: white;
+        }
+
+        /* Multi-select checkbox style */
+        .option-card.multi .option-check {
+            border-radius: 6px;
+        }
+
+        .questions-pair {
+            display: none;
+        }
+
+        .questions-pair.active {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+
+        .question-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 1.5rem 0;
+        }
+
+        /* ---- Step 4 Photo Upload ---- */
+        .photo-container {
+            padding: 1.2rem 1.5rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .photo-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.3rem;
+        }
+
+        .photo-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .photo-upload-box {
+            background: white;
+            border: 2px dashed #ced4da;
+            border-radius: 14px;
+            padding: 1.2rem 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-upload-box:hover {
+            border-color: var(--alzamil-blue-light);
+            background: #f8fbff;
+        }
+
+        .photo-upload-box.has-photo {
+            border-style: solid;
+            border-color: var(--score-green);
+            padding: 0;
+        }
+
+        .photo-upload-box .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+
+        .photo-upload-box .upload-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .photo-upload-box .upload-hint {
+            font-size: 0.7rem;
+            color: #adb5bd;
+            line-height: 1.3;
+        }
+
+        .photo-upload-box input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .photo-upload-box .photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .photo-upload-box.has-photo .photo-preview {
+            display: block;
+        }
+
+        .photo-upload-box.has-photo .upload-icon,
+        .photo-upload-box.has-photo .upload-label,
+        .photo-upload-box.has-photo .upload-hint {
+            display: none;
+        }
+
+        .photo-upload-box .photo-remove {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 28px;
+            height: 28px;
+            background: rgba(231,76,60,0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .photo-upload-box.has-photo .photo-remove {
+            display: flex;
+        }
+
+        .photo-optional {
+            text-align: center;
+            color: #adb5bd;
+            font-size: 0.8rem;
+            margin-top: 12px;
+        }
+
+        /* ---- Step 5 Review ---- */
+        .review-container {
+            padding: 1.2rem 1.5rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .review-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-section {
+            background: white;
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-light);
+        }
+
+        .review-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .review-section-title {
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .review-edit-link {
+            font-size: 0.8rem;
+            color: var(--alzamil-blue-light);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .review-edit-link:hover {
+            text-decoration: underline;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 0.9rem;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-item .review-label {
+            color: var(--text-secondary);
+        }
+
+        .review-item .review-value {
+            font-weight: 700;
+        }
+
+        .review-photos-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .review-photo-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+
+        .review-photo-placeholder {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ced4da;
+            font-size: 1.2rem;
+        }
+
+        .btn-submit-assessment {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        /* ---- Step 6 Analysis Animation ---- */
+        .analysis-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13,47,74,0.95);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .analysis-overlay.active {
+            display: flex;
+        }
+
+        .scanner {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.2);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .scanner::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--alzamil-blue-light);
+            animation: scannerSpin 1.2s linear infinite;
+        }
+
+        .scanner::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(41,128,185,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: scannerPulse 1.5s ease-in-out infinite;
+        }
+
+        .scanner-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            color: white;
+            z-index: 2;
+        }
+
+        @keyframes scannerSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes scannerPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .analysis-message {
+            color: white;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            min-height: 2rem;
+            transition: opacity 0.3s;
+        }
+
+        .analysis-progress {
+            width: 260px;
+            max-width: 80vw;
+        }
+
+        .analysis-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .analysis-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--alzamil-blue-light), var(--score-green));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+
+        .analysis-percent {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* ---- Step 7 Result ---- */
+        .result-container {
+            padding: 1.2rem 1.5rem;
+            max-width: 520px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto 1.2rem;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .score-circle.green { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .score-circle.yellow { background: linear-gradient(135deg, #e67e22, #f39c12); }
+        .score-circle.red { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        .score-circle.black { background: linear-gradient(135deg, #1a1a2e, #2c3e50); }
+
+        .score-circle .score-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1;
+        }
+
+        .score-circle .score-of {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .score-classification {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 0.3rem;
+        }
+
+        .score-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .delivery-estimate {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        .report-section {
+            text-align: start;
+            margin-bottom: 10px;
+        }
+
+        .report-section .accordion-button {
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-radius: 12px !important;
+            padding: 12px 16px;
+        }
+
+        .report-section .accordion-button:not(.collapsed) {
+            background: #f0f7ff;
+            color: var(--alzamil-blue);
+        }
+
+        .report-section .accordion-body {
+            font-size: 0.9rem;
+            padding: 12px 16px;
+        }
+
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .report-list li:last-child {
+            border-bottom: none;
+        }
+
+        .report-list li .list-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .vehicle-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vehicle-card .vehicle-icon {
+            font-size: 2rem;
+        }
+
+        .vehicle-card .vehicle-info {
+            text-align: start;
+        }
+
+        .vehicle-card .vehicle-type {
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .vehicle-card .vehicle-shift {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .result-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #075e54, #25d366);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(37,211,102,0.3);
+            color: white;
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-light);
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            border-color: #adb5bd;
+            color: var(--text-primary);
+        }
+
+        /* ---- Bottom Navigation ---- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 1.5rem;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 998;
+        }
+
+        .bottom-nav.hidden {
+            display: none;
+        }
+
+        .btn-next {
+            padding: 12px 36px;
+            font-size: 1.05rem;
+        }
+
+        .btn-prev {
+            padding: 12px 24px;
+            font-size: 0.95rem;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 400px) {
+            .step-circle {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+            .step-label {
+                font-size: 0.5rem;
+            }
+            .photo-grid {
+                gap: 8px;
+            }
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sra-page">
+
+        <!-- ============ Step Progress Indicator ============ -->
+        <div class="step-progress" id="stepProgress">
+            <div class="step-progress-inner">
+                <!-- Step 1 -->
+                <div class="step-circle-wrap active-wrap" data-step="1">
+                    <div class="step-circle active" id="stepCircle1">&#128075;</div>
+                    <span class="step-label">ترحيب</span>
+                </div>
+                <div class="step-line" id="stepLine1"></div>
+                <!-- Step 2 -->
+                <div class="step-circle-wrap" data-step="2">
+                    <div class="step-circle" id="stepCircle2"><i class="bi bi-geo-alt-fill"></i></div>
+                    <span class="step-label">الموقع</span>
+                </div>
+                <div class="step-line" id="stepLine2"></div>
+                <!-- Step 3 -->
+                <div class="step-circle-wrap" data-step="3">
+                    <div class="step-circle" id="stepCircle3"><i class="bi bi-clipboard-check"></i></div>
+                    <span class="step-label">الأسئلة</span>
+                </div>
+                <div class="step-line" id="stepLine3"></div>
+                <!-- Step 4 -->
+                <div class="step-circle-wrap" data-step="4">
+                    <div class="step-circle" id="stepCircle4"><i class="bi bi-camera-fill"></i></div>
+                    <span class="step-label">الصور</span>
+                </div>
+                <div class="step-line" id="stepLine4"></div>
+                <!-- Step 5 -->
+                <div class="step-circle-wrap" data-step="5">
+                    <div class="step-circle" id="stepCircle5"><i class="bi bi-check2-square"></i></div>
+                    <span class="step-label">مراجعة</span>
+                </div>
+                <div class="step-line" id="stepLine5"></div>
+                <!-- Step 6 -->
+                <div class="step-circle-wrap" data-step="6">
+                    <div class="step-circle" id="stepCircle6"><i class="bi bi-arrow-repeat"></i></div>
+                    <span class="step-label">تحليل</span>
+                </div>
+                <div class="step-line" id="stepLine6"></div>
+                <!-- Step 7 -->
+                <div class="step-circle-wrap" data-step="7">
+                    <div class="step-circle" id="stepCircle7"><i class="bi bi-bar-chart-fill"></i></div>
+                    <span class="step-label">النتيجة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ STEP 1 - Welcome ============ -->
+        <div class="step-content active" id="step1">
+            <div class="welcome-container">
+                <div class="welcome-logo">&#x1F69B;</div>
+                <h1 class="welcome-title">تقييم جاهزية موقع التوصيل</h1>
+                <p class="welcome-subtitle">أجب عن بعض الأسئلة وارفع صور للموقع لنتمكن من جدولة التوصيل</p>
+
+                <div class="order-info-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width:44px;height:44px;background:linear-gradient(135deg,#1a5276,#2980b9);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.3rem;flex-shrink:0;">
+                            <i class="bi bi-box-seam-fill"></i>
+                        </div>
+                        <div>
+                            <div class="order-id">طلب #AZ-2026-0847</div>
+                            <div class="order-product">خزان عمودي 10,000 لتر</div>
+                            <div class="order-customer"><i class="bi bi-person-fill"></i> عبدالله الشمري</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="time-estimate">
+                    <i class="bi bi-clock"></i>
+                    يستغرق 5 دقائق فقط
+                </div>
+                <br>
+                <button class="btn-brand btn-start" onclick="SRA.goToStep(2)">
+                    ابدأ التقييم
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ STEP 2 - GPS Location ============ -->
+        <div class="step-content" id="step2">
+            <div class="map-container">
+                <div id="sra-map"></div>
+                <div class="map-center-pin" id="mapPin"><i class="bi bi-geo-alt-fill"></i></div>
+                <div class="map-center-dot"></div>
+                <div class="map-instruction">
+                    <i class="bi bi-hand-index-thumb-fill"></i>
+                    حرك الخريطة لتحديد موقع التوصيل
+                </div>
+            </div>
+            <div class="location-details">
+                <div class="address-display" id="addressDisplay">الرياض، حي النرجس</div>
+                <div class="coords-display" id="coordsDisplay">24.7136, 46.6753</div>
+                <div class="mb-2">
+                    <label class="form-label fw-bold" style="font-size:0.9rem;">
+                        <i class="bi bi-signpost-fill text-brand"></i>
+                        أقرب معلم
+                    </label>
+                    <input type="text" class="landmark-input" id="landmarkInput" placeholder="مثال: بجانب مسجد الراشد، خلف محطة الوقود...">
+                </div>
+                <button class="btn-brand location-confirm-btn" onclick="SRA.confirmLocation()">
+                    <i class="bi bi-check-lg"></i>
+                    تأكيد الموقع
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ STEP 3 - Questions ============ -->
+        <div class="step-content" id="step3">
+            <div class="question-container">
+                <!-- Question progress -->
+                <div class="question-progress">
+                    <span class="question-counter" id="questionCounter">سؤال 1-2 من 9</span>
+                    <div class="question-progress-bar">
+                        <div class="question-progress-fill" id="questionProgressFill" style="width: 12.5%"></div>
+                    </div>
+                </div>
+
+                <!-- ---- Sub-step 3a: Q1 + Q2 ---- -->
+                <div class="questions-pair active" id="qPair1">
+                    <!-- Q1 -->
+                    <div class="question-block" data-question="building_type">
+                        <h3 class="question-text">ما نوع المبنى؟</h3>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="villa" onclick="SRA.selectOption(this, 'building_type')">
+                                <span class="option-icon">&#x1F3E0;</span>
+                                <span class="option-label">فيلا</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="apartment" onclick="SRA.selectOption(this, 'building_type')">
+                                <span class="option-icon">&#x1F3E2;</span>
+                                <span class="option-label">عمارة سكنية</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="construction" onclick="SRA.selectOption(this, 'building_type')">
+                                <span class="option-icon">&#x1F3D7;&#xFE0F;</span>
+                                <span class="option-label">مبنى تحت الإنشاء</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="commercial" onclick="SRA.selectOption(this, 'building_type')">
+                                <span class="option-icon">&#x1F3ED;</span>
+                                <span class="option-label">تجاري / صناعي</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="farm" onclick="SRA.selectOption(this, 'building_type')">
+                                <span class="option-icon">&#x1F33E;</span>
+                                <span class="option-label">مزرعة / أرض مفتوحة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-divider"></div>
+
+                    <!-- Q2 -->
+                    <div class="question-block" data-question="installation">
+                        <h3 class="question-text">أين سيتم تركيب الخزان؟</h3>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="ground" onclick="SRA.selectOption(this, 'installation')">
+                                <span class="option-icon">&#x2B07;&#xFE0F;</span>
+                                <span class="option-label">أرضي / بجانب المبنى</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="rooftop" onclick="SRA.selectOption(this, 'installation')">
+                                <span class="option-icon">&#x2B06;&#xFE0F;</span>
+                                <span class="option-label">سطح المبنى</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="basement" onclick="SRA.selectOption(this, 'installation')">
+                                <span class="option-icon">&#x1F53D;</span>
+                                <span class="option-label">قبو / تحت الأرض</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="unknown" onclick="SRA.selectOption(this, 'installation')">
+                                <span class="option-icon">&#x2753;</span>
+                                <span class="option-label">لا أعرف بعد</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ---- Sub-step 3b: Q3 (Floors) + Q4 (Road) ---- -->
+                <div class="questions-pair" id="qPair2">
+                    <!-- Q3: Building Floors -->
+                    <div class="question-block" data-question="building_floors">
+                        <h3 class="question-text">كم عدد طوابق المبنى؟</h3>
+                        <p class="question-hint">مهم لتحديد إمكانية وصول الرافعة للسطح</p>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="1" onclick="SRA.selectOption(this, 'building_floors')">
+                                <span class="option-icon">1️⃣</span>
+                                <span class="option-label">طابق واحد (دور أرضي)</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="2" onclick="SRA.selectOption(this, 'building_floors')">
+                                <span class="option-icon">2️⃣</span>
+                                <span class="option-label">طابقين</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="3" onclick="SRA.selectOption(this, 'building_floors')">
+                                <span class="option-icon">3️⃣</span>
+                                <span class="option-label">3 طوابق</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="4-5" onclick="SRA.selectOption(this, 'building_floors')">
+                                <span class="option-icon">🏢</span>
+                                <span class="option-label">4-5 طوابق</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="6+" onclick="SRA.selectOption(this, 'building_floors')">
+                                <span class="option-icon">🏙️</span>
+                                <span class="option-label">6 طوابق أو أكثر</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-divider"></div>
+
+                    <!-- Q4: Road Paved -->
+                    <div class="question-block" data-question="road_paved">
+                        <h3 class="question-text">هل الطريق المؤدي لموقعك معبد؟</h3>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="yes" onclick="SRA.selectOption(this, 'road_paved')">
+                                <span class="option-icon">&#x2705;</span>
+                                <span class="option-label">نعم، معبد بالكامل</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="partially" onclick="SRA.selectOption(this, 'road_paved')">
+                                <span class="option-icon">&#x26A0;&#xFE0F;</span>
+                                <span class="option-label">معبد جزئياً</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="no" onclick="SRA.selectOption(this, 'road_paved')">
+                                <span class="option-icon">&#x274C;</span>
+                                <span class="option-label">لا، طريق ترابي</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="under_construction" onclick="SRA.selectOption(this, 'road_paved')">
+                                <span class="option-icon">&#x1F6A7;</span>
+                                <span class="option-label">الطريق تحت الإنشاء</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ---- Sub-step 3c: Q5 (Truck Access) + Q6 (Parking) ---- -->
+                <div class="questions-pair" id="qPair3">
+                    <!-- Q5: Truck Access -->
+                    <div class="question-block" data-question="truck_access">
+                        <h3 class="question-text">هل تستطيع شاحنة كبيرة الوصول لموقعك؟</h3>
+                        <p class="question-hint">مثل شاحنة خرسانة أو صهريج ماء</p>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="yes" onclick="SRA.selectOption(this, 'truck_access')">
+                                <span class="option-icon">&#x2705;</span>
+                                <span class="option-label">نعم، بسهولة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="tight" onclick="SRA.selectOption(this, 'truck_access')">
+                                <span class="option-icon">&#x26A0;&#xFE0F;</span>
+                                <span class="option-label">نعم، لكن الطريق ضيق</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="no" onclick="SRA.selectOption(this, 'truck_access')">
+                                <span class="option-icon">&#x274C;</span>
+                                <span class="option-label">لا، الطريق ضيق جداً</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="not_sure" onclick="SRA.selectOption(this, 'truck_access')">
+                                <span class="option-icon">&#x2753;</span>
+                                <span class="option-label">لست متأكداً</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-divider"></div>
+
+                    <!-- Q6: Parking Space -->
+                    <div class="question-block" data-question="parking_space">
+                        <h3 class="question-text">هل توجد مساحة بجانب المبنى لوقوف شاحنة وعمل رافعة؟</h3>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="yes" onclick="SRA.selectOption(this, 'parking_space')">
+                                <span class="option-icon">&#x2705;</span>
+                                <span class="option-label">نعم، مساحة مفتوحة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="limited" onclick="SRA.selectOption(this, 'parking_space')">
+                                <span class="option-icon">&#x26A0;&#xFE0F;</span>
+                                <span class="option-label">مساحة محدودة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="no" onclick="SRA.selectOption(this, 'parking_space')">
+                                <span class="option-icon">&#x274C;</span>
+                                <span class="option-label">لا توجد مساحة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="not_sure" onclick="SRA.selectOption(this, 'parking_space')">
+                                <span class="option-icon">&#x2753;</span>
+                                <span class="option-label">لست متأكداً</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ---- Sub-step 3d: Q7 (Power Lines) + Q8 (Obstacles) ---- -->
+                <div class="questions-pair" id="qPair4">
+                    <!-- Q7: Power Lines -->
+                    <div class="question-block" data-question="power_lines">
+                        <h3 class="question-text">هل توجد أسلاك كهرباء بالقرب من المبنى؟</h3>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="none" onclick="SRA.selectOption(this, 'power_lines')">
+                                <span class="option-icon">&#x2705;</span>
+                                <span class="option-label">لا توجد أسلاك كهرباء</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="nearby" onclick="SRA.selectOption(this, 'power_lines')">
+                                <span class="option-icon">&#x26A0;&#xFE0F;</span>
+                                <span class="option-label">نعم، أسلاك قريبة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="directly_above" onclick="SRA.selectOption(this, 'power_lines')">
+                                <span class="option-icon">&#x26D4;</span>
+                                <span class="option-label">نعم، أسلاك فوق المبنى مباشرة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="not_sure" onclick="SRA.selectOption(this, 'power_lines')">
+                                <span class="option-icon">&#x2753;</span>
+                                <span class="option-label">لست متأكداً</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-divider"></div>
+
+                    <!-- Q8 - MULTI SELECT -->
+                    <div class="question-block" data-question="obstacles">
+                        <h3 class="question-text">هل توجد عوائق تمنع الوصول؟</h3>
+                        <p class="question-hint">يمكنك اختيار أكثر من خيار</p>
+                        <div class="option-cards">
+                            <div class="option-card multi" data-value="none" onclick="SRA.selectMulti(this, 'obstacles')">
+                                <span class="option-icon">&#x2705;</span>
+                                <span class="option-label">لا توجد عوائق</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card multi" data-value="construction_materials" onclick="SRA.selectMulti(this, 'obstacles')">
+                                <span class="option-icon">&#x1F9F1;</span>
+                                <span class="option-label">مواد بناء في الطريق</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card multi" data-value="parked_vehicles" onclick="SRA.selectMulti(this, 'obstacles')">
+                                <span class="option-icon">&#x1F697;</span>
+                                <span class="option-label">مركبات أو معدات متوقفة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card multi" data-value="narrow_gate" onclick="SRA.selectMulti(this, 'obstacles')">
+                                <span class="option-icon">&#x1F6AA;</span>
+                                <span class="option-label">بوابة أو مدخل ضيق</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card multi" data-value="trees" onclick="SRA.selectMulti(this, 'obstacles')">
+                                <span class="option-icon">&#x1F333;</span>
+                                <span class="option-label">أشجار أو مباني تعيق الرافعة</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ---- Sub-step 3e: Q9 (Alternative Road) ---- -->
+                <div class="questions-pair" id="qPair5">
+                    <!-- Q9: Alternative Road -->
+                    <div class="question-block" data-question="alternative_road">
+                        <h3 class="question-text">هل يوجد طريق بديل إذا كان الطريق الرئيسي مسدوداً؟</h3>
+                        <div class="option-cards">
+                            <div class="option-card" data-value="yes" onclick="SRA.selectOption(this, 'alternative_road')">
+                                <span class="option-icon">&#x2705;</span>
+                                <span class="option-label">نعم</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="no" onclick="SRA.selectOption(this, 'alternative_road')">
+                                <span class="option-icon">&#x274C;</span>
+                                <span class="option-label">لا، طريق واحد فقط</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                            <div class="option-card" data-value="not_sure" onclick="SRA.selectOption(this, 'alternative_road')">
+                                <span class="option-icon">&#x2753;</span>
+                                <span class="option-label">لست متأكداً</span>
+                                <span class="option-check"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ STEP 4 - Photo Upload ============ -->
+        <div class="step-content" id="step4">
+            <div class="photo-container">
+                <h2 class="photo-title">ارفع صور الموقع</h2>
+                <p class="photo-subtitle">ساعدنا نفهم طبيعة الموقع بشكل أفضل</p>
+
+                <div class="photo-grid">
+                    <!-- Photo 1: Access Road -->
+                    <div class="photo-upload-box" id="photoBox1">
+                        <span class="upload-icon">&#x1F4F7;</span>
+                        <span class="upload-label">طريق الوصول</span>
+                        <span class="upload-hint">صورة للشارع المؤدي للموقع</span>
+                        <input type="file" accept="image/*" capture="environment" onchange="SRA.handlePhoto(this, 1)">
+                        <img class="photo-preview" id="photoPreview1" alt="preview">
+                        <button class="photo-remove" onclick="SRA.removePhoto(event, 1)"><i class="bi bi-x"></i></button>
+                    </div>
+
+                    <!-- Photo 2: Building Entrance -->
+                    <div class="photo-upload-box" id="photoBox2">
+                        <span class="upload-icon">&#x1F3E0;</span>
+                        <span class="upload-label">مدخل المبنى</span>
+                        <span class="upload-hint">صورة للبوابة أو المدخل الرئيسي</span>
+                        <input type="file" accept="image/*" capture="environment" onchange="SRA.handlePhoto(this, 2)">
+                        <img class="photo-preview" id="photoPreview2" alt="preview">
+                        <button class="photo-remove" onclick="SRA.removePhoto(event, 2)"><i class="bi bi-x"></i></button>
+                    </div>
+
+                    <!-- Photo 3: Installation Area -->
+                    <div class="photo-upload-box" id="photoBox3">
+                        <span class="upload-icon">&#x1F4CD;</span>
+                        <span class="upload-label">منطقة التركيب</span>
+                        <span class="upload-hint">صورة لمكان تركيب الخزان</span>
+                        <input type="file" accept="image/*" capture="environment" onchange="SRA.handlePhoto(this, 3)">
+                        <img class="photo-preview" id="photoPreview3" alt="preview">
+                        <button class="photo-remove" onclick="SRA.removePhoto(event, 3)"><i class="bi bi-x"></i></button>
+                    </div>
+
+                    <!-- Photo 4: Overhead Obstacles -->
+                    <div class="photo-upload-box" id="photoBox4">
+                        <span class="upload-icon">&#x2B06;&#xFE0F;</span>
+                        <span class="upload-label">العوائق العلوية</span>
+                        <span class="upload-hint">صورة للأسلاك أو الأشجار من الأسفل</span>
+                        <input type="file" accept="image/*" capture="environment" onchange="SRA.handlePhoto(this, 4)">
+                        <img class="photo-preview" id="photoPreview4" alt="preview">
+                        <button class="photo-remove" onclick="SRA.removePhoto(event, 4)"><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+
+                <p class="photo-optional"><i class="bi bi-info-circle"></i> الصور اختيارية لكنها تساعد في دقة التقييم</p>
+            </div>
+        </div>
+
+        <!-- ============ STEP 5 - Review ============ -->
+        <div class="step-content" id="step5">
+            <div class="review-container">
+                <h2 class="review-title"><i class="bi bi-clipboard-check text-brand"></i> مراجعة التقييم</h2>
+
+                <!-- Location Section -->
+                <div class="review-section">
+                    <div class="review-section-header">
+                        <span class="review-section-title"><i class="bi bi-geo-alt-fill text-brand"></i> الموقع</span>
+                        <a class="review-edit-link" onclick="SRA.goToStep(2)">تعديل</a>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">العنوان</span>
+                        <span class="review-value" id="reviewAddress">--</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">أقرب معلم</span>
+                        <span class="review-value" id="reviewLandmark">--</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">الإحداثيات</span>
+                        <span class="review-value" id="reviewCoords" style="font-family:monospace;font-size:0.8rem;direction:ltr;">--</span>
+                    </div>
+                </div>
+
+                <!-- Answers Section -->
+                <div class="review-section">
+                    <div class="review-section-header">
+                        <span class="review-section-title"><i class="bi bi-clipboard-check text-brand"></i> الإجابات</span>
+                        <a class="review-edit-link" onclick="SRA.goToStep(3)">تعديل</a>
+                    </div>
+                    <div id="reviewAnswers"></div>
+                </div>
+
+                <!-- Photos Section -->
+                <div class="review-section">
+                    <div class="review-section-header">
+                        <span class="review-section-title"><i class="bi bi-camera-fill text-brand"></i> الصور</span>
+                        <a class="review-edit-link" onclick="SRA.goToStep(4)">تعديل</a>
+                    </div>
+                    <div class="review-photos-grid" id="reviewPhotos"></div>
+                </div>
+
+                <button class="btn-success-brand btn-submit-assessment" onclick="SRA.submitAssessment()">
+                    <i class="bi bi-send-fill"></i>
+                    إرسال التقييم
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ STEP 6 - AI Analysis ============ -->
+        <div class="step-content" id="step6">
+            <!-- placeholder so step-content exists -->
+        </div>
+
+        <div class="analysis-overlay" id="analysisOverlay">
+            <div class="scanner">
+                <span class="scanner-icon"><i class="bi bi-cpu"></i></span>
+            </div>
+            <div class="analysis-message" id="analysisMessage">جاري تحليل الصور...</div>
+            <div class="analysis-progress">
+                <div class="analysis-progress-bar">
+                    <div class="analysis-progress-fill" id="analysisProgressFill"></div>
+                </div>
+                <div class="analysis-percent" id="analysisPercent">0%</div>
+            </div>
+        </div>
+
+        <!-- ============ STEP 7 - Result ============ -->
+        <div class="step-content" id="step7">
+            <div class="result-container">
+                <!-- Score Circle -->
+                <div class="score-circle" id="resultScoreCircle">
+                    <span class="score-number" id="resultScoreNumber">--</span>
+                    <span class="score-of">/ 100</span>
+                </div>
+
+                <!-- Classification Label -->
+                <div class="score-classification" id="resultClassification">--</div>
+                <div class="score-description" id="resultDescription">--</div>
+
+                <!-- Delivery Class Badge -->
+                <div class="mb-3">
+                    <span class="class-badge" id="resultClassBadge">--</span>
+                </div>
+
+                <!-- Delivery Estimate -->
+                <div class="delivery-estimate" id="resultDeliveryEstimate">
+                    <i class="bi bi-truck"></i>
+                    <span id="resultDeliveryDays">--</span>
+                </div>
+
+                <!-- Report Accordion -->
+                <div class="accordion" id="reportAccordion">
+                    <!-- Road Assessment -->
+                    <div class="report-section">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportRoad">
+                                    <i class="bi bi-signpost-2-fill me-2"></i> تقييم الطريق
+                                </button>
+                            </h2>
+                            <div id="reportRoad" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <ul class="report-list" id="reportRoadList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crane Assessment -->
+                    <div class="report-section" id="reportCraneSection" style="display:none;">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportCrane">
+                                    <i class="bi bi-building-fill-gear me-2"></i> تقييم الرافعة
+                                </button>
+                            </h2>
+                            <div id="reportCrane" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <ul class="report-list" id="reportCraneList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risks -->
+                    <div class="report-section">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportRisks">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> المخاطر
+                                </button>
+                            </h2>
+                            <div id="reportRisks" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <ul class="report-list" id="reportRisksList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Required Actions -->
+                    <div class="report-section">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportActions">
+                                    <i class="bi bi-list-check me-2"></i> الإجراءات المطلوبة
+                                </button>
+                            </h2>
+                            <div id="reportActions" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <ul class="report-list" id="reportActionsList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Vehicle -->
+                    <div class="report-section">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportVehicle">
+                                    <i class="bi bi-truck me-2"></i> المركبة الموصى بها
+                                </button>
+                            </h2>
+                            <div id="reportVehicle" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body" id="reportVehicleContent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Method -->
+                    <div class="report-section">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportMethod">
+                                    <i class="bi bi-box-seam-fill me-2"></i> طريقة التوصيل
+                                </button>
+                            </h2>
+                            <div id="reportMethod" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body" id="reportMethodContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions">
+                    <a href="whatsapp.html" class="btn-whatsapp">
+                        <i class="bi bi-whatsapp"></i>
+                        مشاركة عبر واتساب
+                    </a>
+                    <button class="btn-reset" onclick="SRA.resetForm()">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        تقييم موقع جديد
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Bottom Navigation ============ -->
+        <div class="bottom-nav hidden" id="bottomNav">
+            <button class="btn-outline-brand btn-prev" id="btnPrev" onclick="SRA.prevStep()">
+                <i class="bi bi-arrow-right"></i>
+                السابق
+            </button>
+            <button class="btn-brand btn-next" id="btnNext" onclick="SRA.nextStep()">
+                التالي
+                <i class="bi bi-arrow-left"></i>
+            </button>
+        </div>
+
+    </div><!-- /.sra-page -->
+
+    <!-- ============ Scripts ============ -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/scoring.js"></script>
+    <script src="js/mock-data.js"></script>
+
+    <script>
+    /* ============================================
+       SRA Form Controller
+       7-Step Wizard Logic
+       ============================================ */
+    var SRA = {
+        // ---- State ----
+        currentStep: 1,
+        currentQuestionPair: 1,
+        totalSteps: 7,
+        totalQuestionPairs: 5,
+        map: null,
+        mapCenter: { lat: 24.7136, lng: 46.6753 },
+
+        // Collected data
+        data: {
+            location: { lat: 24.7136, lng: 46.6753, address: '', landmark: '' },
+            answers: {
+                building_type: null,
+                installation: null,
+                building_floors: null,
+                road_paved: null,
+                truck_access: null,
+                parking_space: null,
+                power_lines: null,
+                obstacles: [],
+                alternative_road: null
+            },
+            photos: { 1: null, 2: null, 3: null, 4: null },
+            photoFiles: { 1: null, 2: null, 3: null, 4: null }
+        },
+
+        // Mock addresses based on general coordinates
+        mockAddresses: [
+            { lat: 24.84, lng: 46.62, name: 'الرياض، حي النرجس' },
+            { lat: 24.82, lng: 46.64, name: 'الرياض، حي الياسمين' },
+            { lat: 24.80, lng: 46.66, name: 'الرياض، حي العارض' },
+            { lat: 24.78, lng: 46.68, name: 'الرياض، حي الملقا' },
+            { lat: 24.76, lng: 46.70, name: 'الرياض، حي القيروان' },
+            { lat: 24.74, lng: 46.72, name: 'الرياض، حي الصحافة' },
+            { lat: 24.72, lng: 46.68, name: 'الرياض، حي العليا' },
+            { lat: 24.70, lng: 46.66, name: 'الرياض، حي السليمانية' },
+            { lat: 24.68, lng: 46.70, name: 'الرياض، حي المربع' },
+            { lat: 24.66, lng: 46.72, name: 'الرياض، حي الملز' },
+            { lat: 24.64, lng: 46.74, name: 'الرياض، حي الشفا' },
+            { lat: 24.75, lng: 46.75, name: 'الرياض، حي الرمال' },
+            { lat: 24.71, lng: 46.60, name: 'الرياض، حي طويق' },
+            { lat: 24.73, lng: 46.64, name: 'الرياض، حي الدرعية' }
+        ],
+
+        // Question labels for review
+        questionLabels: {
+            building_type: 'نوع المبنى',
+            installation: 'موقع التركيب',
+            building_floors: 'عدد الطوابق',
+            road_paved: 'حالة الطريق',
+            truck_access: 'وصول الشاحنة',
+            parking_space: 'مساحة الوقوف',
+            power_lines: 'أسلاك الكهرباء',
+            obstacles: 'العوائق',
+            alternative_road: 'طريق بديل'
+        },
+
+        // Answer labels for review
+        answerLabels: {
+            // building_type
+            villa: 'فيلا',
+            apartment: 'عمارة سكنية',
+            construction: 'مبنى تحت الإنشاء',
+            commercial: 'تجاري / صناعي',
+            farm: 'مزرعة / أرض مفتوحة',
+            // installation
+            ground: 'أرضي / بجانب المبنى',
+            rooftop: 'سطح المبنى',
+            basement: 'قبو / تحت الأرض',
+            unknown: 'لا أعرف بعد',
+            // building_floors
+            '1': 'طابق واحد',
+            '2': 'طابقين',
+            '3': '3 طوابق',
+            '4-5': '4-5 طوابق',
+            '6+': '6 طوابق أو أكثر',
+            // road_paved
+            yes: 'نعم',
+            partially: 'جزئياً',
+            no: 'لا',
+            under_construction: 'تحت الإنشاء',
+            // truck_access
+            tight: 'ضيق',
+            not_sure: 'غير متأكد',
+            // parking_space
+            limited: 'محدودة',
+            // power_lines
+            none: 'لا توجد',
+            nearby: 'قريبة',
+            directly_above: 'فوق المبنى مباشرة',
+            // obstacles
+            construction_materials: 'مواد بناء',
+            parked_vehicles: 'مركبات متوقفة',
+            narrow_gate: 'مدخل ضيق',
+            trees: 'أشجار'
+        },
+
+        // ---- Initialization ----
+        init: function() {
+            this.updateStepProgress();
+            this.updateBottomNav();
+        },
+
+        // ---- Step Navigation ----
+        goToStep: function(step) {
+            // Hide current step
+            var currentEl = document.getElementById('step' + this.currentStep);
+            if (currentEl) currentEl.classList.remove('active');
+
+            // Show target step
+            this.currentStep = step;
+            var targetEl = document.getElementById('step' + step);
+            if (targetEl) {
+                targetEl.classList.remove('active');
+                // Force reflow for animation
+                void targetEl.offsetWidth;
+                targetEl.classList.add('active');
+            }
+
+            // Special initializations per step
+            if (step === 2) this.initMap();
+            if (step === 3) this.showQuestionPair(this.currentQuestionPair);
+            if (step === 5) this.buildReview();
+            if (step === 6) this.runAnalysis();
+
+            this.updateStepProgress();
+            this.updateBottomNav();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        nextStep: function() {
+            // If on step 3, navigate between question pairs first
+            if (this.currentStep === 3) {
+                if (this.currentQuestionPair < this.totalQuestionPairs) {
+                    this.currentQuestionPair++;
+                    this.showQuestionPair(this.currentQuestionPair);
+                    this.updateQuestionProgress();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+            }
+            if (this.currentStep < this.totalSteps) {
+                this.goToStep(this.currentStep + 1);
+            }
+        },
+
+        prevStep: function() {
+            // If on step 3, navigate between question pairs first
+            if (this.currentStep === 3) {
+                if (this.currentQuestionPair > 1) {
+                    this.currentQuestionPair--;
+                    this.showQuestionPair(this.currentQuestionPair);
+                    this.updateQuestionProgress();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+            }
+            if (this.currentStep > 1) {
+                this.goToStep(this.currentStep - 1);
+            }
+        },
+
+        updateStepProgress: function() {
+            for (var i = 1; i <= this.totalSteps; i++) {
+                var circle = document.getElementById('stepCircle' + i);
+                var wrap = circle.parentElement;
+                var line = document.getElementById('stepLine' + i);
+
+                circle.classList.remove('active', 'completed');
+                wrap.classList.remove('active-wrap', 'completed-wrap');
+
+                if (i < this.currentStep) {
+                    circle.classList.add('completed');
+                    wrap.classList.add('completed-wrap');
+                    circle.innerHTML = '<i class="bi bi-check-lg"></i>';
+                } else if (i === this.currentStep) {
+                    circle.classList.add('active');
+                    wrap.classList.add('active-wrap');
+                    // Restore original icons
+                    this.restoreStepIcon(circle, i);
+                } else {
+                    this.restoreStepIcon(circle, i);
+                }
+
+                if (line) {
+                    line.classList.remove('completed');
+                    if (i < this.currentStep) {
+                        line.classList.add('completed');
+                    }
+                }
+            }
+        },
+
+        restoreStepIcon: function(circle, step) {
+            var icons = {
+                1: '&#128075;',
+                2: '<i class="bi bi-geo-alt-fill"></i>',
+                3: '<i class="bi bi-clipboard-check"></i>',
+                4: '<i class="bi bi-camera-fill"></i>',
+                5: '<i class="bi bi-check2-square"></i>',
+                6: '<i class="bi bi-arrow-repeat"></i>',
+                7: '<i class="bi bi-bar-chart-fill"></i>'
+            };
+            circle.innerHTML = icons[step] || '';
+        },
+
+        updateBottomNav: function() {
+            var bottomNav = document.getElementById('bottomNav');
+            var btnPrev = document.getElementById('btnPrev');
+            var btnNext = document.getElementById('btnNext');
+
+            // Hide on step 1, 6, 7
+            if (this.currentStep === 1 || this.currentStep === 6 || this.currentStep === 7) {
+                bottomNav.classList.add('hidden');
+                return;
+            }
+
+            bottomNav.classList.remove('hidden');
+
+            // Show/hide prev
+            btnPrev.style.visibility = (this.currentStep === 2 && true) ? 'visible' : 'visible';
+            if (this.currentStep === 2) {
+                btnPrev.style.visibility = 'hidden';
+            }
+
+            // Update next button text for step 5
+            if (this.currentStep === 5) {
+                btnNext.style.display = 'none';
+            } else {
+                btnNext.style.display = '';
+            }
+        },
+
+        // ---- Map (Step 2) ----
+        initMap: function() {
+            if (this.map) {
+                this.map.invalidateSize();
+                return;
+            }
+
+            var self = this;
+            setTimeout(function() {
+                self.map = L.map('sra-map', {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView([self.mapCenter.lat, self.mapCenter.lng], 12);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(self.map);
+
+                // Add zoom control to the left side (RTL)
+                L.control.zoom({ position: 'topleft' }).addTo(self.map);
+
+                // Update address on map move
+                self.map.on('moveend', function() {
+                    var center = self.map.getCenter();
+                    self.mapCenter = { lat: center.lat, lng: center.lng };
+                    self.updateAddress(center.lat, center.lng);
+                });
+
+                // Bounce pin on move start
+                self.map.on('movestart', function() {
+                    var pin = document.getElementById('mapPin');
+                    pin.classList.add('bouncing');
+                    setTimeout(function() { pin.classList.remove('bouncing'); }, 300);
+                });
+            }, 200);
+        },
+
+        updateAddress: function(lat, lng) {
+            // Find closest mock address
+            var closest = this.mockAddresses[0];
+            var minDist = Infinity;
+
+            for (var i = 0; i < this.mockAddresses.length; i++) {
+                var a = this.mockAddresses[i];
+                var dist = Math.sqrt(Math.pow(a.lat - lat, 2) + Math.pow(a.lng - lng, 2));
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = a;
+                }
+            }
+
+            document.getElementById('addressDisplay').textContent = closest.name;
+            document.getElementById('coordsDisplay').textContent = lat.toFixed(4) + ', ' + lng.toFixed(4);
+
+            this.data.location.lat = lat;
+            this.data.location.lng = lng;
+            this.data.location.address = closest.name;
+        },
+
+        confirmLocation: function() {
+            this.data.location.landmark = document.getElementById('landmarkInput').value;
+            this.nextStep();
+        },
+
+        // ---- Questions (Step 3) ----
+        showQuestionPair: function(pairNum) {
+            var pairs = document.querySelectorAll('.questions-pair');
+            pairs.forEach(function(p) { p.classList.remove('active'); });
+
+            var target = document.getElementById('qPair' + pairNum);
+            if (target) {
+                target.classList.remove('active');
+                void target.offsetWidth;
+                target.classList.add('active');
+            }
+            this.updateQuestionProgress();
+        },
+
+        updateQuestionProgress: function() {
+            var counter = document.getElementById('questionCounter');
+            var fill = document.getElementById('questionProgressFill');
+
+            // Question pairs: 1=(1-2), 2=(3-4), 3=(5-6), 4=(7-8), 5=(9)
+            var questionRanges = {
+                1: '1-2',
+                2: '3-4',
+                3: '5-6',
+                4: '7-8',
+                5: '9'
+            };
+            counter.textContent = 'سؤال ' + questionRanges[this.currentQuestionPair] + ' من 9';
+
+            var pct = (this.currentQuestionPair / this.totalQuestionPairs) * 100;
+            fill.style.width = pct + '%';
+        },
+
+        selectOption: function(card, questionKey) {
+            // Deselect siblings
+            var siblings = card.parentElement.querySelectorAll('.option-card');
+            siblings.forEach(function(s) { s.classList.remove('selected'); });
+
+            // Select this
+            card.classList.add('selected');
+            this.data.answers[questionKey] = card.getAttribute('data-value');
+        },
+
+        selectMulti: function(card, questionKey) {
+            var value = card.getAttribute('data-value');
+
+            // "none" clears everything else
+            if (value === 'none') {
+                var siblings = card.parentElement.querySelectorAll('.option-card');
+                siblings.forEach(function(s) { s.classList.remove('selected'); });
+                card.classList.add('selected');
+                this.data.answers[questionKey] = ['none'];
+                return;
+            }
+
+            // Deselect "none" if another option picked
+            var noneCard = card.parentElement.querySelector('[data-value="none"]');
+            if (noneCard) noneCard.classList.remove('selected');
+
+            // Toggle this card
+            card.classList.toggle('selected');
+
+            // Rebuild array
+            var selected = card.parentElement.querySelectorAll('.option-card.selected');
+            var values = [];
+            selected.forEach(function(s) { values.push(s.getAttribute('data-value')); });
+
+            // Remove 'none' from the array if other things are selected
+            var noneIdx = values.indexOf('none');
+            if (noneIdx > -1 && values.length > 1) {
+                values.splice(noneIdx, 1);
+            }
+
+            this.data.answers[questionKey] = values.length > 0 ? values : [];
+        },
+
+        // ---- Photos (Step 4) ----
+        handlePhoto: function(input, index) {
+            if (!input.files || !input.files[0]) return;
+
+            var file = input.files[0];
+            var reader = new FileReader();
+            var self = this;
+
+            reader.onload = function(e) {
+                var preview = document.getElementById('photoPreview' + index);
+                var box = document.getElementById('photoBox' + index);
+                preview.src = e.target.result;
+                box.classList.add('has-photo');
+                self.data.photos[index] = e.target.result;
+                self.data.photoFiles[index] = file;
+            };
+
+            reader.readAsDataURL(file);
+        },
+
+        removePhoto: function(event, index) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var box = document.getElementById('photoBox' + index);
+            var preview = document.getElementById('photoPreview' + index);
+            var input = box.querySelector('input[type="file"]');
+
+            box.classList.remove('has-photo');
+            preview.src = '';
+            input.value = '';
+            this.data.photos[index] = null;
+            this.data.photoFiles[index] = null;
+        },
+
+        // ---- Review (Step 5) ----
+        buildReview: function() {
+            // Location
+            document.getElementById('reviewAddress').textContent = this.data.location.address || '--';
+            document.getElementById('reviewLandmark').textContent = this.data.location.landmark || '--';
+            document.getElementById('reviewCoords').textContent = this.data.location.lat.toFixed(4) + ', ' + this.data.location.lng.toFixed(4);
+
+            // Answers
+            var answersHtml = '';
+            var self = this;
+            var keys = ['building_type', 'installation', 'building_floors', 'road_paved', 'truck_access', 'parking_space', 'power_lines', 'obstacles', 'alternative_road'];
+
+            keys.forEach(function(key) {
+                var val = self.data.answers[key];
+                var displayVal = '--';
+
+                if (val !== null && val !== undefined) {
+                    if (Array.isArray(val)) {
+                        displayVal = val.map(function(v) { return self.answerLabels[v] || v; }).join('، ');
+                    } else {
+                        displayVal = self.answerLabels[val] || val;
+                    }
+                }
+
+                answersHtml += '<div class="review-item">';
+                answersHtml += '<span class="review-label">' + self.questionLabels[key] + '</span>';
+                answersHtml += '<span class="review-value">' + displayVal + '</span>';
+                answersHtml += '</div>';
+            });
+
+            document.getElementById('reviewAnswers').innerHTML = answersHtml;
+
+            // Photos
+            var photosHtml = '';
+            for (var i = 1; i <= 4; i++) {
+                if (this.data.photos[i]) {
+                    photosHtml += '<img class="review-photo-thumb" src="' + this.data.photos[i] + '" alt="photo ' + i + '">';
+                } else {
+                    photosHtml += '<div class="review-photo-placeholder"><i class="bi bi-image"></i></div>';
+                }
+            }
+            document.getElementById('reviewPhotos').innerHTML = photosHtml;
+        },
+
+        // ---- Submit & Analysis (Step 6) ----
+        submitAssessment: function() {
+            this.goToStep(6);
+        },
+
+        runAnalysis: function() {
+            var overlay = document.getElementById('analysisOverlay');
+            overlay.classList.add('active');
+
+            var messages = [
+                'جاري تحليل الصور...',
+                'فحص عرض الطريق...',
+                'تقييم إمكانية وصول الشاحنة...',
+                'تحليل مخاطر السلامة...',
+                'حساب نتيجة الجاهزية...'
+            ];
+
+            var msgEl = document.getElementById('analysisMessage');
+            var fillEl = document.getElementById('analysisProgressFill');
+            var pctEl = document.getElementById('analysisPercent');
+            var self = this;
+            var step = 0;
+            var totalDuration = 7500;
+            var stepDuration = totalDuration / messages.length;
+
+            // Show messages sequentially
+            function showMessage() {
+                if (step >= messages.length) {
+                    // Done - go to results
+                    setTimeout(function() {
+                        overlay.classList.remove('active');
+                        self.goToStep(7);
+                        self.renderResult();
+                    }, 500);
+                    return;
+                }
+
+                msgEl.style.opacity = '0';
+                setTimeout(function() {
+                    msgEl.textContent = messages[step];
+                    msgEl.style.opacity = '1';
+
+                    var pct = Math.round(((step + 1) / messages.length) * 100);
+                    fillEl.style.width = pct + '%';
+                    pctEl.textContent = pct + '%';
+
+                    step++;
+                    setTimeout(showMessage, stepDuration);
+                }, 200);
+            }
+
+            // Reset
+            fillEl.style.width = '0%';
+            pctEl.textContent = '0%';
+            msgEl.textContent = messages[0];
+            msgEl.style.opacity = '1';
+
+            setTimeout(function() {
+                step = 1;
+                fillEl.style.width = '20%';
+                pctEl.textContent = '20%';
+                setTimeout(showMessage, stepDuration);
+            }, stepDuration);
+        },
+
+        // ---- Result (Step 7) ----
+        renderResult: function() {
+            // Calculate score using ASDP scoring engine
+            var answers = this.data.answers;
+            var tankSize = 10000; // Mock order tank size
+
+            var report;
+            if (typeof ASDP !== 'undefined' && ASDP.scoring && typeof ASDP.scoring.calculate === 'function') {
+                report = ASDP.scoring.calculate(answers, tankSize);
+            } else {
+                // Fallback if scoring.js not loaded
+                report = {
+                    score: 75,
+                    classification: 'GREEN',
+                    deliveryClass: 'B',
+                    vehicle: { type: 'شاحنة ثقيلة', icon: '&#x1F69B;', shift: 'ليلي', craneNeeded: false },
+                    deductions: [],
+                    risks: ['لا توجد مخاطر'],
+                    customerActions: [],
+                    needsCrane: false,
+                    estimatedDeliveryDays: '1-2'
+                };
+            }
+
+            // Store result
+            this.result = report;
+
+            // Score circle
+            var scoreCircle = document.getElementById('resultScoreCircle');
+            scoreCircle.className = 'score-circle ' + report.classification.toLowerCase();
+            document.getElementById('resultScoreNumber').textContent = report.score;
+
+            // Classification
+            var classTexts = ASDP.text.scores[report.classification] || { label: '--', desc: '--', icon: '' };
+            document.getElementById('resultClassification').innerHTML = classTexts.icon + ' ' + classTexts.label;
+            document.getElementById('resultClassification').style.color = ASDP.scoring.getScoreColor(report.classification);
+            document.getElementById('resultDescription').textContent = classTexts.desc;
+
+            // Delivery class badge
+            var classInfo = ASDP.text.classes[report.deliveryClass] || { label: '--', desc: '--' };
+            var classBadge = document.getElementById('resultClassBadge');
+            classBadge.className = 'class-badge class-' + report.deliveryClass.toLowerCase();
+            classBadge.textContent = classInfo.label + ' - ' + classInfo.desc;
+
+            // Delivery estimate
+            var deliveryText = 'التوصيل المتوقع خلال ' + report.estimatedDeliveryDays + ' أيام';
+            if (report.estimatedDeliveryDays === 'غير محدد') {
+                deliveryText = 'موعد التوصيل غير محدد - يحتاج تقييم إضافي';
+            }
+            document.getElementById('resultDeliveryDays').textContent = deliveryText;
+
+            // ---- Report Sections ----
+
+            // Road Assessment
+            var roadHtml = '';
+            roadHtml += this.makeReportItem(answers.road_paved === 'yes', 'حالة الطريق: ' + (this.answerLabels[answers.road_paved] || '--'));
+            roadHtml += this.makeReportItem(answers.truck_access === 'yes', 'وصول الشاحنة: ' + (this.answerLabels[answers.truck_access] || '--'));
+            roadHtml += this.makeReportItem(answers.alternative_road === 'yes', 'طريق بديل: ' + (this.answerLabels[answers.alternative_road] || '--'));
+            document.getElementById('reportRoadList').innerHTML = roadHtml;
+
+            // Crane Assessment (if rooftop)
+            if (report.needsCrane) {
+                document.getElementById('reportCraneSection').style.display = '';
+                var craneHtml = '';
+                craneHtml += this.makeReportItem(answers.power_lines === 'none', 'أسلاك الكهرباء: ' + (this.answerLabels[answers.power_lines] || '--'));
+                craneHtml += this.makeReportItem(answers.parking_space === 'yes', 'مساحة وقوف الرافعة: ' + (this.answerLabels[answers.parking_space] || '--'));
+                var obstacleCheck = !answers.obstacles || answers.obstacles.length === 0 || (answers.obstacles.length === 1 && answers.obstacles[0] === 'none');
+                craneHtml += this.makeReportItem(obstacleCheck, 'عوائق علوية: ' + (obstacleCheck ? 'لا توجد' : 'موجودة'));
+                document.getElementById('reportCraneList').innerHTML = craneHtml;
+            } else {
+                document.getElementById('reportCraneSection').style.display = 'none';
+            }
+
+            // Risks
+            var risksHtml = '';
+            if (report.risks.length === 0) {
+                risksHtml = '<li><span class="list-icon" style="color:var(--score-green);">&#x2705;</span> لا توجد مخاطر</li>';
+            } else {
+                report.risks.forEach(function(r) {
+                    risksHtml += '<li><span class="list-icon" style="color:var(--score-red);"><i class="bi bi-exclamation-circle-fill"></i></span> ' + r + '</li>';
+                });
+            }
+            document.getElementById('reportRisksList').innerHTML = risksHtml;
+
+            // Actions
+            var actionsHtml = '';
+            if (report.customerActions.length === 0) {
+                actionsHtml = '<li><span class="list-icon" style="color:var(--score-green);">&#x2705;</span> لا توجد إجراءات مطلوبة</li>';
+            } else {
+                report.customerActions.forEach(function(a) {
+                    actionsHtml += '<li><span class="list-icon" style="color:var(--score-yellow);"><i class="bi bi-arrow-left-circle-fill"></i></span> ' + a + '</li>';
+                });
+            }
+            document.getElementById('reportActionsList').innerHTML = actionsHtml;
+
+            // Vehicle
+            var v = report.vehicle;
+            var vehicleHtml = '<div class="vehicle-card">';
+            vehicleHtml += '<span class="vehicle-icon">' + (v.icon || '&#x1F69B;') + '</span>';
+            vehicleHtml += '<div class="vehicle-info">';
+            vehicleHtml += '<div class="vehicle-type">' + v.type + '</div>';
+            vehicleHtml += '<div class="vehicle-shift"><i class="bi bi-clock"></i> ' + v.shift + '</div>';
+            if (v.craneNeeded) {
+                vehicleHtml += '<div class="vehicle-shift" style="color:var(--score-yellow);"><i class="bi bi-building-fill-gear"></i> يحتاج رافعة</div>';
+            }
+            vehicleHtml += '</div></div>';
+            document.getElementById('reportVehicleContent').innerHTML = vehicleHtml;
+
+            // Delivery method
+            var methodHtml = '';
+            var methodInfo = ASDP.text.classes[report.deliveryClass] || {};
+            methodHtml += '<div style="padding:8px 0;"><strong>' + (methodInfo.label || '--') + ':</strong> ' + (methodInfo.method || '--') + '</div>';
+            if (v.phase1) {
+                methodHtml += '<div style="padding:4px 0; font-size:0.9rem;"><i class="bi bi-1-circle-fill text-brand"></i> المرحلة الأولى: ' + v.phase1 + '</div>';
+                methodHtml += '<div style="padding:4px 0; font-size:0.9rem;"><i class="bi bi-2-circle-fill text-brand"></i> المرحلة الثانية: ' + v.phase2 + '</div>';
+            }
+            document.getElementById('reportMethodContent').innerHTML = methodHtml;
+
+            // Save to storage
+            if (typeof ASDP !== 'undefined' && ASDP.storage) {
+                ASDP.storage.save('last_assessment', {
+                    orderId: 'AZ-2026-0847',
+                    location: this.data.location,
+                    answers: this.data.answers,
+                    result: report
+                });
+            }
+        },
+
+        makeReportItem: function(isGood, text) {
+            var icon = isGood
+                ? '<span class="list-icon" style="color:var(--score-green);"><i class="bi bi-check-circle-fill"></i></span>'
+                : '<span class="list-icon" style="color:var(--score-yellow);"><i class="bi bi-exclamation-circle-fill"></i></span>';
+            return '<li>' + icon + ' ' + text + '</li>';
+        },
+
+        // ---- Reset ----
+        resetForm: function() {
+            // Reset state
+            this.currentStep = 1;
+            this.currentQuestionPair = 1;
+            this.data.answers = {
+                building_type: null,
+                installation: null,
+                building_floors: null,
+                road_paved: null,
+                truck_access: null,
+                parking_space: null,
+                power_lines: null,
+                obstacles: [],
+                alternative_road: null
+            };
+            this.data.photos = { 1: null, 2: null, 3: null, 4: null };
+            this.data.photoFiles = { 1: null, 2: null, 3: null, 4: null };
+            this.data.location = { lat: 24.7136, lng: 46.6753, address: '', landmark: '' };
+
+            // Clear UI selections
+            document.querySelectorAll('.option-card.selected').forEach(function(c) {
+                c.classList.remove('selected');
+            });
+
+            // Clear photos
+            for (var i = 1; i <= 4; i++) {
+                var box = document.getElementById('photoBox' + i);
+                box.classList.remove('has-photo');
+                document.getElementById('photoPreview' + i).src = '';
+                var input = box.querySelector('input[type="file"]');
+                if (input) input.value = '';
+            }
+
+            // Clear landmark
+            document.getElementById('landmarkInput').value = '';
+
+            // Reset map if exists
+            if (this.map) {
+                this.map.setView([24.7136, 46.6753], 12);
+            }
+
+            // Go to step 1
+            this.goToStep(1);
+        }
+    };
+
+    // ---- Initialize on DOM ready ----
+    document.addEventListener('DOMContentLoaded', function() {
+        SRA.init();
+    });
+    </script>
+</body>
+</html>
