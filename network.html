@@ -18,10 +18,10 @@
 
     <!-- Header -->
     <div class="network-header">
-        <h1><i class="bi bi-diagram-3"></i> شبكة التوزيع - Hub & Spoke</h1>
+        <h1><i class="bi bi-diagram-3"></i> <span data-i18n="net.title">شبكة التوزيع - Hub & Spoke</span></h1>
         <div style="display:flex; gap:1rem; align-items:center;">
-            <a href="dashboard.html" class="back-link"><i class="bi bi-speedometer2"></i> لوحة التحكم</a>
-            <a href="index.html" class="back-link"><i class="bi bi-house"></i> الرئيسية</a>
+            <a href="dashboard.html" class="back-link"><i class="bi bi-speedometer2"></i> <span data-i18n="net.back_dashboard">لوحة التحكم</span></a>
+            <a href="index.html" class="back-link"><i class="bi bi-house"></i> <span data-i18n="net.back_home">الرئيسية</span></a>
         </div>
     </div>
 
@@ -29,27 +29,27 @@
     <div class="network-kpi-strip">
         <div class="network-kpi-card hub-card">
             <div class="kpi-value">6</div>
-            <div class="kpi-label">مراكز إقليمية (Hubs)</div>
+            <div class="kpi-label" data-i18n="net.kpi_hubs">مراكز إقليمية (Hubs)</div>
         </div>
         <div class="network-kpi-card depot-card">
             <div class="kpi-value">18</div>
-            <div class="kpi-label">نقاط خدمة (Depots)</div>
+            <div class="kpi-label" data-i18n="net.kpi_depots">نقاط خدمة (Depots)</div>
         </div>
         <div class="network-kpi-card fleet-card">
             <div class="kpi-value">90</div>
-            <div class="kpi-label">شاحنة ثقيلة</div>
+            <div class="kpi-label" data-i18n="net.kpi_heavy">شاحنة ثقيلة</div>
         </div>
         <div class="network-kpi-card crane-card">
             <div class="kpi-value">8</div>
-            <div class="kpi-label">شاحنة رافعة مخصصة</div>
+            <div class="kpi-label" data-i18n="net.kpi_crane">شاحنة رافعة مخصصة</div>
         </div>
         <div class="network-kpi-card">
             <div class="kpi-value">133</div>
-            <div class="kpi-label">طلب اليوم</div>
+            <div class="kpi-label" data-i18n="net.kpi_orders">طلب اليوم</div>
         </div>
         <div class="network-kpi-card">
             <div class="kpi-value" style="color:#2ecc71;">78%</div>
-            <div class="kpi-label">متوسط استخدام الرافعات</div>
+            <div class="kpi-label" data-i18n="net.kpi_util">متوسط استخدام الرافعات</div>
         </div>
     </div>
 
@@ -62,15 +62,15 @@
             <!-- Default: Hub/Depot List -->
             <div id="panelList">
                 <div class="panel-section">
-                    <div class="panel-section-title"><i class="bi bi-building"></i> المراكز الإقليمية (Hubs)</div>
+                    <div class="panel-section-title"><i class="bi bi-building"></i> <span data-i18n="net.panel_hubs">المراكز الإقليمية (Hubs)</span></div>
                     <div id="hubList"></div>
                 </div>
                 <div class="panel-section">
-                    <div class="panel-section-title"><i class="bi bi-shop"></i> نقاط الخدمة (Depots)</div>
+                    <div class="panel-section-title"><i class="bi bi-shop"></i> <span data-i18n="net.panel_depots">نقاط الخدمة (Depots)</span></div>
                     <div id="depotList"></div>
                 </div>
                 <div class="panel-section">
-                    <div class="panel-section-title"><i class="bi bi-truck"></i> تجهيزات الليلة (Cross-Dock)</div>
+                    <div class="panel-section-title"><i class="bi bi-truck"></i> <span data-i18n="net.panel_crossdock">تجهيزات الليلة (Cross-Dock)</span></div>
                     <div id="crossdockList"></div>
                 </div>
             </div>
@@ -85,24 +85,24 @@
                     </div>
                 </div>
                 <div class="panel-section">
-                    <div class="panel-section-title"><i class="bi bi-bar-chart"></i> الإحصائيات</div>
+                    <div class="panel-section-title"><i class="bi bi-bar-chart"></i> <span data-i18n="net.detail_stats">الإحصائيات</span></div>
                     <div class="stat-grid" id="detailStats"></div>
                 </div>
                 <div class="panel-section" id="detailFleetSection">
-                    <div class="panel-section-title"><i class="bi bi-truck"></i> الأسطول</div>
+                    <div class="panel-section-title"><i class="bi bi-truck"></i> <span data-i18n="net.detail_fleet">الأسطول</span></div>
                     <div id="detailFleet"></div>
                 </div>
                 <div class="panel-section" id="detailUtilSection" style="display:none;">
-                    <div class="panel-section-title"><i class="bi bi-gear"></i> الاستخدام والصيانة</div>
+                    <div class="panel-section-title"><i class="bi bi-gear"></i> <span data-i18n="net.detail_util">الاستخدام والصيانة</span></div>
                     <div id="detailUtil"></div>
                 </div>
                 <div class="panel-section" id="detailCrossdockSection" style="display:none;">
-                    <div class="panel-section-title"><i class="bi bi-arrow-left-right"></i> تجهيزات الليلة</div>
+                    <div class="panel-section-title"><i class="bi bi-arrow-left-right"></i> <span data-i18n="net.detail_crossdock">تجهيزات الليلة</span></div>
                     <div id="detailCrossdock"></div>
                 </div>
                 <div style="padding:1rem 1.25rem;">
                     <button class="btn btn-outline-secondary btn-sm w-100" onclick="showListPanel()">
-                        <i class="bi bi-arrow-right"></i> العودة للقائمة
+                        <i class="bi bi-arrow-right"></i> <span data-i18n="net.detail_back">العودة للقائمة</span>
                     </button>
                 </div>
             </div>
@@ -113,10 +113,10 @@
         <div class="network-map-container">
             <div id="networkMap"></div>
             <div class="map-legend">
-                <div class="legend-title">دليل الخريطة</div>
-                <div class="legend-item"><div class="legend-dot hub"></div> مركز إقليمي (Hub)</div>
-                <div class="legend-item"><div class="legend-dot depot"></div> نقطة خدمة (Depot)</div>
-                <div class="legend-item"><div class="legend-line spoke"></div> خط توزيع (Spoke)</div>
+                <div class="legend-title" data-i18n="net.legend_title">دليل الخريطة</div>
+                <div class="legend-item"><div class="legend-dot hub"></div> <span data-i18n="net.legend_hub">مركز إقليمي (Hub)</span></div>
+                <div class="legend-item"><div class="legend-dot depot"></div> <span data-i18n="net.legend_depot">نقطة خدمة (Depot)</span></div>
+                <div class="legend-item"><div class="legend-line spoke"></div> <span data-i18n="net.legend_spoke">خط توزيع (Spoke)</span></div>
             </div>
         </div>
 
@@ -124,6 +124,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/shared.js"></script>
 <script src="js/mock-data.js"></script>
 <script>
@@ -157,7 +158,7 @@
         });
 
         var marker = L.marker([hub.lat, hub.lng], { icon: icon }).addTo(map);
-        marker.bindTooltip('<b>' + hub.name + '</b><br>' + hub.fleet.heavy + ' شاحنة ثقيلة | ' + hub.fleet.craneTruck + ' شاحنة رافعة', {
+        marker.bindTooltip('<b>' + hub.name + '</b><br>' + hub.fleet.heavy + ' ' + ASDP.t('net.kpi_heavy', 'شاحنة ثقيلة') + ' | ' + hub.fleet.craneTruck + ' ' + ASDP.t('net.kpi_crane', 'شاحنة رافعة'), {
             direction: 'top', offset: [0, -20]
         });
         marker.on('click', function() { showHubDetail(hub.id); });
@@ -174,7 +175,7 @@
         });
 
         var marker = L.marker([depot.lat, depot.lng], { icon: icon }).addTo(map);
-        marker.bindTooltip('<b>' + depot.name + '</b><br>مخزون: ' + depot.stockLevel + '%', {
+        marker.bindTooltip('<b>' + depot.name + '</b><br>' + ASDP.t('net.stock_label', 'مخزون') + ': ' + depot.stockLevel + '%', {
             direction: 'top', offset: [0, -14]
         });
         marker.on('click', function() { showDepotDetail(depot.id); });
@@ -205,7 +206,7 @@
             html += '<div class="hub-marker tier-hub"><i class="bi bi-building"></i></div>';
             html += '<div class="hub-info">';
             html += '<h4>' + hub.name + '</h4>';
-            html += '<div class="hub-meta">' + totalFleet + ' مركبة | ' + hub.ordersToday + ' طلب اليوم | رافعات: ' + hub.craneUtilization + '%</div>';
+            html += '<div class="hub-meta">' + totalFleet + ' ' + ASDP.t('net.vehicle_label', 'مركبة') + ' | ' + hub.ordersToday + ' ' + ASDP.t('net.order_label', 'طلب') + ' | ' + ASDP.t('net.crane_util_label', 'رافعات') + ': ' + hub.craneUtilization + '%</div>';
             html += '</div>';
             html += '<div class="hub-status"></div>';
             html += '</div>';
@@ -222,7 +223,7 @@
             html += '<div class="hub-marker tier-depot"><i class="bi bi-shop"></i></div>';
             html += '<div class="hub-info">';
             html += '<h4>' + depot.name + '</h4>';
-            html += '<div class="hub-meta">تابع لـ ' + (hub ? hub.region : '') + ' | مخزون: ' + depot.stockLevel + '% | ' + depot.ordersToday + ' طلب</div>';
+            html += '<div class="hub-meta">' + ASDP.t('net.depot_follows', 'تابع لـ') + ' ' + (hub ? hub.region : '') + ' | ' + ASDP.t('net.stock_label', 'مخزون') + ': ' + depot.stockLevel + '% | ' + depot.ordersToday + ' ' + ASDP.t('net.order_label', 'طلب') + '</div>';
             html += '</div>';
             html += '<div class="hub-status" style="background:' + (depot.stockLevel > 60 ? '#2ecc71' : '#f39c12') + ';"></div>';
             html += '</div>';
@@ -241,9 +242,9 @@
                 html += '<div class="crossdock-time">' + cd.time + '</div>';
                 html += '<div class="crossdock-route">';
                 html += '<div class="route-from-to">' + hub.region + ' → ' + (depot ? depot.name.replace('نقطة خدمة - ', '') : cd.to) + '</div>';
-                html += '<div class="route-items">' + cd.items + ' منتج</div>';
+                html += '<div class="route-items">' + cd.items + ' ' + ASDP.t('net.crossdock_product', 'منتج') + '</div>';
                 html += '</div>';
-                var statusAr = cd.status === 'enroute' ? 'في الطريق' : cd.status === 'loading' ? 'جاري التحميل' : 'مجدول';
+                var statusAr = ASDP.t('net.crossdock_' + cd.status, cd.status === 'enroute' ? 'في الطريق' : cd.status === 'loading' ? 'جاري التحميل' : 'مجدول');
                 html += '<span class="crossdock-status ' + cd.status + '">' + statusAr + '</span>';
                 html += '</div>';
             });
@@ -270,30 +271,30 @@
         document.getElementById('detailIcon').innerHTML = '<i class="bi bi-building" style="font-size:1.5rem;"></i>';
         document.getElementById('detailName').textContent = hub.name;
         var badge = document.getElementById('detailBadge');
-        badge.textContent = 'مركز إقليمي - ' + hub.region;
+        badge.textContent = ASDP.t('net.hub_label', 'مركز إقليمي') + ' - ' + hub.region;
         badge.className = 'location-type-badge type-hub';
 
         // Stats
         var totalFleet = hub.fleet.heavy + hub.fleet.craneTruck + hub.fleet.light;
         document.getElementById('detailStats').innerHTML =
-            '<div class="stat-item highlight"><div class="stat-number">' + hub.ordersToday + '</div><div class="stat-label">طلب اليوم</div></div>' +
-            '<div class="stat-item"><div class="stat-number">' + hub.ordersThisWeek + '</div><div class="stat-label">طلب هذا الأسبوع</div></div>' +
-            '<div class="stat-item"><div class="stat-number">' + totalFleet + '</div><div class="stat-label">إجمالي المركبات</div></div>' +
-            '<div class="stat-item warning"><div class="stat-number">' + hub.inventory.totalSKUs + '</div><div class="stat-label">إجمالي المنتجات</div></div>';
+            '<div class="stat-item highlight"><div class="stat-number">' + hub.ordersToday + '</div><div class="stat-label">' + ASDP.t('net.stat_orders_today', 'طلب اليوم') + '</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + hub.ordersThisWeek + '</div><div class="stat-label">' + ASDP.t('net.stat_orders_week', 'طلب هذا الأسبوع') + '</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + totalFleet + '</div><div class="stat-label">' + ASDP.t('net.stat_vehicles', 'إجمالي المركبات') + '</div></div>' +
+            '<div class="stat-item warning"><div class="stat-number">' + hub.inventory.totalSKUs + '</div><div class="stat-label">' + ASDP.t('net.stat_products', 'إجمالي المنتجات') + '</div></div>';
 
         // Fleet
         document.getElementById('detailFleet').innerHTML =
-            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-truck"></i> شاحنات ثقيلة</div><div class="fleet-count">' + hub.fleet.heavy + '</div></div>' +
-            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-cone-striped"></i> شاحنات رافعة مخصصة</div><div class="fleet-count">' + hub.fleet.craneTruck + '</div></div>' +
-            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-car-front"></i> مركبات خفيفة</div><div class="fleet-count">' + hub.fleet.light + '</div></div>';
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-truck"></i> ' + ASDP.t('net.fleet_heavy', 'شاحنات ثقيلة') + '</div><div class="fleet-count">' + hub.fleet.heavy + '</div></div>' +
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-cone-striped"></i> ' + ASDP.t('net.fleet_crane', 'شاحنات رافعة مخصصة') + '</div><div class="fleet-count">' + hub.fleet.craneTruck + '</div></div>' +
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-car-front"></i> ' + ASDP.t('net.fleet_light', 'مركبات خفيفة') + '</div><div class="fleet-count">' + hub.fleet.light + '</div></div>';
 
         // Utilization & Maintenance
         document.getElementById('detailUtilSection').style.display = '';
         var utilHtml = '';
-        utilHtml += makeUtilBar('استخدام الرافعات', hub.craneUtilization);
-        utilHtml += makeUtilBar('سعة الصيانة', Math.round((hub.maintenance.active / hub.maintenance.baysTotal) * 100));
+        utilHtml += makeUtilBar(ASDP.t('net.util_crane', 'استخدام الرافعات'), hub.craneUtilization);
+        utilHtml += makeUtilBar(ASDP.t('net.util_maintenance', 'سعة الصيانة'), Math.round((hub.maintenance.active / hub.maintenance.baysTotal) * 100));
         utilHtml += '<div style="margin-top:0.5rem; font-size:0.8rem;">';
-        utilHtml += '<i class="bi bi-wrench"></i> صيانة نشطة: <b>' + hub.maintenance.active + '</b> | مجدولة: <b>' + hub.maintenance.scheduled + '</b> | حجرات: <b>' + hub.maintenance.baysTotal + '</b>';
+        utilHtml += '<i class="bi bi-wrench"></i> ' + ASDP.t('net.maint_active', 'صيانة نشطة:') + ' <b>' + hub.maintenance.active + '</b> | ' + ASDP.t('net.maint_scheduled', 'مجدولة:') + ' <b>' + hub.maintenance.scheduled + '</b> | ' + ASDP.t('net.maint_bays', 'حجرات:') + ' <b>' + hub.maintenance.baysTotal + '</b>';
         utilHtml += '</div>';
         document.getElementById('detailUtil').innerHTML = utilHtml;
 
@@ -303,15 +304,15 @@
         if (hub.crossdockTonight && hub.crossdockTonight.length > 0) {
             hub.crossdockTonight.forEach(function(cd) {
                 var depot = data.depots.find(function(d) { return d.id === cd.to; });
-                var statusAr = cd.status === 'enroute' ? 'في الطريق' : cd.status === 'loading' ? 'جاري التحميل' : 'مجدول';
+                var statusAr = ASDP.t('net.crossdock_' + cd.status, cd.status === 'enroute' ? 'في الطريق' : cd.status === 'loading' ? 'جاري التحميل' : 'مجدول');
                 cdHtml += '<div class="crossdock-item">';
                 cdHtml += '<div class="crossdock-time">' + cd.time + '</div>';
-                cdHtml += '<div class="crossdock-route"><div class="route-from-to">→ ' + (depot ? depot.name.replace('نقطة خدمة - ', '') : cd.to) + '</div><div class="route-items">' + cd.items + ' منتج</div></div>';
+                cdHtml += '<div class="crossdock-route"><div class="route-from-to">→ ' + (depot ? depot.name.replace('نقطة خدمة - ', '') : cd.to) + '</div><div class="route-items">' + cd.items + ' ' + ASDP.t('net.crossdock_product', 'منتج') + '</div></div>';
                 cdHtml += '<span class="crossdock-status ' + cd.status + '">' + statusAr + '</span>';
                 cdHtml += '</div>';
             });
         } else {
-            cdHtml = '<div style="text-align:center; color:#999; padding:1rem;">لا توجد تجهيزات الليلة</div>';
+            cdHtml = '<div style="text-align:center; color:#999; padding:1rem;">' + ASDP.t('net.no_crossdock', 'لا توجد تجهيزات الليلة') + '</div>';
         }
         document.getElementById('detailCrossdock').innerHTML = cdHtml;
     };
@@ -332,24 +333,24 @@
         document.getElementById('detailIcon').innerHTML = '<i class="bi bi-shop" style="font-size:1.5rem;"></i>';
         document.getElementById('detailName').textContent = depot.name;
         var badge = document.getElementById('detailBadge');
-        badge.textContent = 'نقطة خدمة - تابعة لـ ' + (hub ? hub.name.replace('المركز الإقليمي - ', '') : '');
+        badge.textContent = ASDP.t('net.depot_label', 'نقطة خدمة') + ' - ' + ASDP.t('net.depot_follows', 'تابعة لـ') + ' ' + (hub ? hub.name.replace('المركز الإقليمي - ', '') : '');
         badge.className = 'location-type-badge type-depot';
 
         // Stats
         document.getElementById('detailStats').innerHTML =
-            '<div class="stat-item highlight"><div class="stat-number">' + depot.ordersToday + '</div><div class="stat-label">طلب اليوم</div></div>' +
-            '<div class="stat-item"><div class="stat-number">' + depot.fastMovers + '</div><div class="stat-label">منتج سريع الحركة</div></div>' +
-            '<div class="stat-item ' + (depot.stockLevel > 60 ? '' : 'warning') + '"><div class="stat-number">' + depot.stockLevel + '%</div><div class="stat-label">مستوى المخزون</div></div>' +
-            '<div class="stat-item"><div class="stat-number">' + depot.fleet.light + '</div><div class="stat-label">مركبات خفيفة</div></div>';
+            '<div class="stat-item highlight"><div class="stat-number">' + depot.ordersToday + '</div><div class="stat-label">' + ASDP.t('net.stat_orders_today', 'طلب اليوم') + '</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + depot.fastMovers + '</div><div class="stat-label">' + ASDP.t('net.fast_movers', 'منتج سريع الحركة') + '</div></div>' +
+            '<div class="stat-item ' + (depot.stockLevel > 60 ? '' : 'warning') + '"><div class="stat-number">' + depot.stockLevel + '%</div><div class="stat-label">' + ASDP.t('net.stock_level', 'مستوى المخزون') + '</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + depot.fleet.light + '</div><div class="stat-label">' + ASDP.t('net.fleet_light', 'مركبات خفيفة') + '</div></div>';
 
         // Fleet
         document.getElementById('detailFleet').innerHTML =
-            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-car-front"></i> مركبات خفيفة</div><div class="fleet-count">' + depot.fleet.light + '</div></div>' +
-            '<div style="font-size:0.75rem; color:#6c757d; margin-top:0.5rem;"><i class="bi bi-info-circle"></i> الشاحنات الثقيلة والرافعات تُرسل من المركز الإقليمي عند الحاجة</div>';
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-car-front"></i> ' + ASDP.t('net.fleet_light', 'مركبات خفيفة') + '</div><div class="fleet-count">' + depot.fleet.light + '</div></div>' +
+            '<div style="font-size:0.75rem; color:#6c757d; margin-top:0.5rem;"><i class="bi bi-info-circle"></i> ' + ASDP.t('net.depot_note', 'الشاحنات الثقيلة والرافعات تُرسل من المركز الإقليمي عند الحاجة') + '</div>';
 
         // Utilization
         document.getElementById('detailUtilSection').style.display = '';
-        document.getElementById('detailUtil').innerHTML = makeUtilBar('مستوى المخزون', depot.stockLevel);
+        document.getElementById('detailUtil').innerHTML = makeUtilBar(ASDP.t('net.stock_level', 'مستوى المخزون'), depot.stockLevel);
 
         // No cross-dock for depots
         document.getElementById('detailCrossdockSection').style.display = 'none';

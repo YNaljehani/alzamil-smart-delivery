@@ -19,18 +19,18 @@
             <span>ASDP</span>
         </a>
         <ul class="nav-links">
-            <li><a href="index.html"><i class="bi bi-house-door"></i> الرئيسية</a></li>
-            <li><a href="sra-form.html"><i class="bi bi-clipboard-check"></i> تقييم الموقع</a></li>
-            <li><a href="dashboard.html"><i class="bi bi-grid-1x2"></i> لوحة التحكم</a></li>
-            <li><a href="tracking.html"><i class="bi bi-geo-alt"></i> التتبع</a></li>
-            <li><a href="whatsapp.html"><i class="bi bi-whatsapp"></i> واتساب</a></li>
+            <li><a href="index.html"><i class="bi bi-house-door"></i> <span data-i18n="nav.home">الرئيسية</span></a></li>
+            <li><a href="sra-form.html"><i class="bi bi-clipboard-check"></i> <span data-i18n="nav.sra">تقييم الموقع</span></a></li>
+            <li><a href="dashboard.html"><i class="bi bi-grid-1x2"></i> <span data-i18n="nav.dashboard">لوحة التحكم</span></a></li>
+            <li><a href="tracking.html"><i class="bi bi-geo-alt"></i> <span data-i18n="nav.tracking">التتبع</span></a></li>
+            <li><a href="whatsapp.html"><i class="bi bi-whatsapp"></i> <span data-i18n="nav.notifications">واتساب</span></a></li>
         </ul>
     </nav>
 
     <!-- ====== Page Title ====== -->
     <div class="wa-page-title">
-        <h2><i class="bi bi-whatsapp" style="color: #25d366;"></i> محاكاة إشعارات واتساب</h2>
-        <p>تجربة تفاعلية لرحلة العميل عبر رسائل واتساب التلقائية</p>
+        <h2><i class="bi bi-whatsapp" style="color: #25d366;"></i> <span data-i18n="wa.title">محاكاة إشعارات واتساب</span></h2>
+        <p data-i18n="wa.header_desc">تجربة تفاعلية لرحلة العميل عبر رسائل واتساب التلقائية</p>
     </div>
 
     <!-- ====== Progress ====== -->
@@ -63,14 +63,14 @@
         <div class="wa-chat" id="waChat">
             <!-- Date chip -->
             <div class="wa-date-chip">
-                <span>اليوم</span>
+                <span data-i18n="wa.today">اليوم</span>
             </div>
         </div>
 
         <!-- Input Bar (decorative) -->
         <div class="wa-input-bar">
             <span class="wa-input-emoji"><i class="bi bi-emoji-smile"></i></span>
-            <div class="wa-input-field">اكتب رسالة</div>
+            <div class="wa-input-field" data-i18n="wa.placeholder">اكتب رسالة</div>
             <span class="wa-input-attach"><i class="bi bi-paperclip"></i></span>
             <span class="wa-input-mic"><i class="bi bi-mic-fill"></i></span>
         </div>
@@ -81,7 +81,7 @@
     <div class="wa-controls">
         <button class="wa-ctrl-btn replay" id="btnReplay" onclick="replayChat()">
             <i class="bi bi-arrow-counterclockwise"></i>
-            إعادة تشغيل
+            <span data-i18n="wa.restart">إعادة تشغيل</span>
         </button>
 
         <button class="wa-ctrl-btn pause-resume" id="btnPause" onclick="togglePause()">
@@ -98,10 +98,11 @@
 
     <!-- ====== Footer ====== -->
     <div style="text-align: center; padding: 1rem 1rem 2rem; color: var(--text-secondary); font-size: 0.85rem;">
-        <p>MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
+        <p data-i18n="common.footer1">MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
     </div>
 
     <!-- ====== Scripts ====== -->
+    <script src="js/i18n.js"></script>
     <script src="js/shared.js"></script>
     <script>
     (function () {
@@ -297,7 +298,7 @@
            ================================================ */
         function showTyping() {
             // Update header status
-            waStatus.textContent = 'يكتب...';
+            waStatus.textContent = ASDP.t('wa.typing', 'يكتب...');
 
             var row = document.createElement('div');
             row.className = 'wa-typing-row';
@@ -313,7 +314,7 @@
         }
 
         function hideTyping() {
-            waStatus.textContent = 'متصل';
+            waStatus.textContent = ASDP.t('wa.business_status', 'متصل');
             var el = document.getElementById('typingIndicator');
             if (el) el.remove();
         }
@@ -422,7 +423,7 @@
             updatePauseButton();
 
             // Clear chat except date chip
-            chatEl.innerHTML = '<div class="wa-date-chip"><span>اليوم</span></div>';
+            chatEl.innerHTML = '<div class="wa-date-chip"><span>' + ASDP.t('wa.today', 'اليوم') + '</span></div>';
 
             // Restart
             setTimeout(function () {
@@ -501,11 +502,11 @@
             if (isPaused) {
                 btnPause.classList.add('paused');
                 pauseIcon.className = 'bi bi-play-fill';
-                pauseLabel.textContent = 'استئناف';
+                pauseLabel.textContent = ASDP.t('wa.resume', 'استئناف');
             } else {
                 btnPause.classList.remove('paused');
                 pauseIcon.className = 'bi bi-pause-fill';
-                pauseLabel.textContent = 'إيقاف';
+                pauseLabel.textContent = ASDP.t('wa.stop', 'إيقاف');
             }
         }
 

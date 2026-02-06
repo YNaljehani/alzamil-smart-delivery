@@ -46,36 +46,40 @@ ASDP.storage = {
     }
 };
 
-// ---- Formatters ----
+// ---- Formatters (locale-aware) ----
 ASDP.format = {
-    arabicDate: function(date) {
+    _locale: function() { return (ASDP.lang && ASDP.lang() === 'en') ? 'en-US' : 'ar-SA'; },
+
+    date: function(date) {
         if (!(date instanceof Date)) date = new Date(date);
-        return date.toLocaleDateString('ar-SA', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+        return date.toLocaleDateString(this._locale(), {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
     },
 
-    arabicTime: function(date) {
+    arabicDate: function(date) { return this.date(date); },
+
+    time: function(date) {
         if (!(date instanceof Date)) date = new Date(date);
-        return date.toLocaleTimeString('ar-SA', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
+        return date.toLocaleTimeString(this._locale(), {
+            hour: '2-digit', minute: '2-digit', hour12: true
         });
     },
 
-    arabicDateTime: function(date) {
-        return this.arabicDate(date) + ' - ' + this.arabicTime(date);
+    arabicTime: function(date) { return this.time(date); },
+
+    dateTime: function(date) {
+        return this.date(date) + ' - ' + this.time(date);
     },
+
+    arabicDateTime: function(date) { return this.dateTime(date); },
 
     currency: function(amount) {
+        var suffix = (ASDP.lang && ASDP.lang() === 'en') ? ' SAR' : ' ر.س';
         if (amount >= 1000000) {
-            return (amount / 1000000).toFixed(1) + 'M ر.س';
+            return (amount / 1000000).toFixed(1) + 'M' + suffix;
         }
-        return amount.toLocaleString('ar-SA') + ' ر.س';
+        return amount.toLocaleString(this._locale()) + suffix;
     },
 
     percentage: function(value) {
@@ -89,54 +93,52 @@ ASDP.generateOrderId = function() {
     return 'AZ-2026-' + num;
 };
 
-// ---- Arabic Text Constants ----
+// ---- Text Constants (i18n-aware) ----
+// Uses ASDP.t() from i18n.js - evaluated once at load time (page reloads on language switch)
+var _t = (typeof ASDP.t === 'function') ? ASDP.t : function(k, fb) { return fb || k; };
+
 ASDP.text = {
-    // Score labels
     scores: {
-        GREEN: { label: 'أخضر', desc: 'الموقع جاهز للتوصيل', icon: '✅' },
-        YELLOW: { label: 'أصفر', desc: 'الوصول ممكن مع احتياطات', icon: '⚠️' },
-        RED: { label: 'أحمر', desc: 'الشاحنة لا تستطيع الوصول', icon: '🚫' },
-        BLACK: { label: 'أسود', desc: 'الموقع غير جاهز - خطر سلامة', icon: '⛔' }
+        GREEN: { label: _t('score.GREEN.label', 'أخضر'), desc: _t('score.GREEN.desc', 'الموقع جاهز للتوصيل'), icon: '✅' },
+        YELLOW: { label: _t('score.YELLOW.label', 'أصفر'), desc: _t('score.YELLOW.desc', 'الوصول ممكن مع احتياطات'), icon: '⚠️' },
+        RED: { label: _t('score.RED.label', 'أحمر'), desc: _t('score.RED.desc', 'الشاحنة لا تستطيع الوصول'), icon: '🚫' },
+        BLACK: { label: _t('score.BLACK.label', 'أسود'), desc: _t('score.BLACK.desc', 'الموقع غير جاهز - خطر سلامة'), icon: '⛔' }
     },
 
-    // Delivery classes
     classes: {
-        'A': { label: 'الفئة أ', desc: 'توصيل خفيف', method: 'مركبة خفيفة - نهاري' },
-        'B': { label: 'الفئة ب', desc: 'توصيل ليلي مباشر', method: 'شاحنة ثقيلة - ليلي (9م - 6ص)' },
-        'C-1': { label: 'الفئة ج-1', desc: 'شاحنة رافعة (رحلة واحدة)', method: 'شاحنة رافعة مخصصة - نهاري - بدون تصريح' },
-        'C-2': { label: 'الفئة ج-2', desc: 'شاحنة ثقيلة (تصريح مطلوب)', method: 'شاحنة ثقيلة + تصريح | بديل: ليلي مرحلتين' },
-        'D': { label: 'الفئة د', desc: 'موقع صعب', method: 'خطة خاصة مطلوبة' }
+        'A': { label: _t('class.A.label', 'الفئة أ'), desc: _t('class.A.desc', 'توصيل خفيف'), method: _t('class.A.method', 'مركبة خفيفة - نهاري') },
+        'B': { label: _t('class.B.label', 'الفئة ب'), desc: _t('class.B.desc', 'توصيل ليلي مباشر'), method: _t('class.B.method', 'شاحنة ثقيلة - ليلي (9م - 6ص)') },
+        'C-1': { label: _t('class.C1.label', 'الفئة ج-1'), desc: _t('class.C1.desc', 'شاحنة رافعة (رحلة واحدة)'), method: _t('class.C1.method', 'شاحنة رافعة مخصصة - نهاري - بدون تصريح') },
+        'C-2': { label: _t('class.C2.label', 'الفئة ج-2'), desc: _t('class.C2.desc', 'شاحنة ثقيلة (تصريح مطلوب)'), method: _t('class.C2.method', 'شاحنة ثقيلة + تصريح | بديل: ليلي مرحلتين') },
+        'D': { label: _t('class.D.label', 'الفئة د'), desc: _t('class.D.desc', 'موقع صعب - خطة خاصة'), method: _t('class.D.method', 'يتطلب تنسيق خاص وزيارة ميدانية') }
     },
 
-    // Statuses
     statuses: {
-        pending: 'قيد الانتظار',
-        loading: 'جاري التحميل',
-        enroute: 'في الطريق',
-        lift_duty: 'مهمة رفع',
-        arrived: 'وصلت الشاحنة',
-        delivered: 'تم التوصيل',
-        delayed: 'متأخر',
-        failed: 'فشل التوصيل',
-        crane_scheduled: 'رافعة مجدولة',
-        crane_done: 'تم التركيب'
+        pending: _t('status.pending', 'قيد الانتظار'),
+        loading: _t('status.loading', 'جاري التحميل'),
+        enroute: _t('status.enroute', 'في الطريق'),
+        lift_duty: _t('status.lift_duty', 'مهمة رفع'),
+        arrived: _t('status.arrived', 'وصلت الشاحنة'),
+        delivered: _t('status.delivered', 'تم التوصيل'),
+        delayed: _t('status.delayed', 'متأخر'),
+        failed: _t('status.failed', 'فشل التوصيل'),
+        crane_scheduled: _t('status.crane_scheduled', 'رافعة مجدولة'),
+        crane_done: _t('status.crane_done', 'تم التركيب')
     },
 
-    // Building types
     buildingTypes: {
-        villa: 'فيلا',
-        apartment: 'عمارة سكنية',
-        construction: 'مبنى تحت الإنشاء',
-        commercial: 'تجاري / صناعي',
-        farm: 'مزرعة / أرض مفتوحة'
+        villa: _t('sra.q1_villa', 'فيلا'),
+        apartment: _t('sra.q1_apartment', 'عمارة سكنية'),
+        construction: _t('sra.q1_construction', 'مبنى تحت الإنشاء'),
+        commercial: _t('sra.q1_commercial', 'تجاري / صناعي'),
+        farm: _t('sra.q1_farm', 'مزرعة / أرض مفتوحة')
     },
 
-    // Installation locations
     installLocations: {
-        ground: 'أرضي / بجانب المبنى',
-        rooftop: 'سطح المبنى',
-        basement: 'قبو / تحت الأرض',
-        unknown: 'لا أعرف بعد'
+        ground: _t('sra.q2_ground', 'أرضي / بجانب المبنى'),
+        rooftop: _t('sra.q2_rooftop', 'سطح المبنى'),
+        basement: _t('sra.q2_basement', 'قبو / تحت الأرض'),
+        unknown: _t('sra.q2_unknown', 'لا أعرف بعد')
     }
 };
 
@@ -160,7 +162,7 @@ ASDP.animateCounter = function(element, target, duration, suffix) {
             clearInterval(timer);
         }
         if (Number.isInteger(target)) {
-            element.textContent = Math.floor(start).toLocaleString('ar-SA') + suffix;
+            element.textContent = Math.floor(start).toLocaleString(ASDP.format._locale()) + suffix;
         } else {
             element.textContent = start.toFixed(1) + suffix;
         }

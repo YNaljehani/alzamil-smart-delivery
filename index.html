@@ -205,9 +205,9 @@
     <div class="hero-section">
         <div class="hero-content fade-in">
             <div class="hero-logo">🚛</div>
-            <h1 class="hero-title">منصة الزامل الذكية للتوصيل</h1>
-            <p class="hero-subtitle">ASDP - Alzamil Smart Delivery Platform</p>
-            <p class="hero-subtitle" style="margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.7;">
+            <h1 class="hero-title" data-i18n="index.hero_title">منصة الزامل الذكية للتوصيل</h1>
+            <p class="hero-subtitle" data-i18n="index.hero_subtitle">ASDP - Alzamil Smart Delivery Platform</p>
+            <p class="hero-subtitle" style="margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.7;" data-i18n="index.hero_features">
                 تقييم ذكي للمواقع • توصيل ليلي بدون تصاريح • شبكة Hub & Spoke • تتبع مباشر
             </p>
         </div>
@@ -222,20 +222,20 @@
                     <div class="persona-icon customer">
                         <i class="bi bi-person-fill"></i>
                     </div>
-                    <h3 class="persona-title">تجربة العميل</h3>
-                    <p class="persona-desc">اختبر رحلة العميل من تقييم الموقع حتى استلام الخزان</p>
+                    <h3 class="persona-title" data-i18n="index.customer_title">تجربة العميل</h3>
+                    <p class="persona-desc" data-i18n="index.customer_desc">اختبر رحلة العميل من تقييم الموقع حتى استلام الخزان</p>
                     <div class="persona-links">
                         <a href="sra-form.html" class="persona-link">
                             <i class="bi bi-clipboard-check"></i>
-                            تقييم جاهزية الموقع
+                            <span data-i18n="index.customer_sra">تقييم جاهزية الموقع</span>
                         </a>
                         <a href="tracking.html" class="persona-link">
                             <i class="bi bi-geo-alt"></i>
-                            تتبع التوصيل
+                            <span data-i18n="index.customer_tracking">تتبع التوصيل</span>
                         </a>
                         <a href="whatsapp.html" class="persona-link">
                             <i class="bi bi-whatsapp"></i>
-                            محاكاة إشعارات واتساب
+                            <span data-i18n="index.customer_whatsapp">محاكاة إشعارات واتساب</span>
                         </a>
                     </div>
                 </div>
@@ -247,24 +247,24 @@
                     <div class="persona-icon operations">
                         <i class="bi bi-speedometer2"></i>
                     </div>
-                    <h3 class="persona-title">فريق العمليات</h3>
-                    <p class="persona-desc">لوحة تحكم العمليات - جدول التوصيلات، المركبات، مؤشرات الأداء</p>
+                    <h3 class="persona-title" data-i18n="index.ops_title">فريق العمليات</h3>
+                    <p class="persona-desc" data-i18n="index.ops_desc">لوحة تحكم العمليات - جدول التوصيلات، المركبات، مؤشرات الأداء</p>
                     <div class="persona-links">
                         <a href="dashboard.html" class="persona-link">
                             <i class="bi bi-grid-1x2"></i>
-                            لوحة التحكم الرئيسية
+                            <span data-i18n="index.ops_dashboard">لوحة التحكم الرئيسية</span>
                         </a>
                         <a href="network.html" class="persona-link" style="background: #d5f5e3;">
                             <i class="bi bi-diagram-3"></i>
-                            شبكة التوزيع (Hub & Spoke)
+                            <span data-i18n="index.ops_network">شبكة التوزيع (Hub & Spoke)</span>
                         </a>
                         <a href="dashboard.html#queue" class="persona-link">
                             <i class="bi bi-list-check"></i>
-                            جدول توصيلات الليلة
+                            <span data-i18n="index.ops_queue">جدول توصيلات الليلة</span>
                         </a>
                         <a href="dashboard.html#fleet" class="persona-link">
                             <i class="bi bi-truck"></i>
-                            حالة الأسطول
+                            <span data-i18n="index.ops_fleet">حالة الأسطول</span>
                         </a>
                     </div>
                 </div>
@@ -277,37 +277,38 @@
         <div class="stats-bar" id="statsBar" style="display: none;">
             <div class="stat-item">
                 <div class="stat-value" id="statOrders">10</div>
-                <div class="stat-label">طلبات</div>
+                <div class="stat-label" data-i18n="index.stat_orders">طلبات</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="statVehicles">8</div>
-                <div class="stat-label">مركبات</div>
+                <div class="stat-label" data-i18n="index.stat_vehicles">مركبات</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="statTonight">7</div>
-                <div class="stat-label">توصيلات الليلة</div>
+                <div class="stat-label" data-i18n="index.stat_tonight">توصيلات الليلة</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="statSRA">10</div>
-                <div class="stat-label">تقييمات</div>
+                <div class="stat-label" data-i18n="index.stat_assessments">تقييمات</div>
             </div>
         </div>
 
         <button class="demo-btn" id="loadDemoBtn" onclick="loadDemo()">
             <i class="bi bi-database-fill-gear"></i>
-            تحميل بيانات العرض التجريبي
+            <span data-i18n="common.load_demo">تحميل بيانات العرض التجريبي</span>
         </button>
-        <p style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-secondary);">
+        <p style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="common.demo_desc">
             يحمل بيانات واقعية لـ 10 طلبات و 8 مركبات و جدول توصيلات كامل
         </p>
     </div>
 
     <!-- Footer -->
     <div class="footer">
-        <p>MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
-        <p>Alzamil Smart Delivery Platform (ASDP) v1.0 - February 2026</p>
+        <p data-i18n="common.footer1">MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
+        <p data-i18n="common.footer2">Alzamil Smart Delivery Platform (ASDP) v1.0 - February 2026</p>
     </div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/shared.js"></script>
     <script src="js/mock-data.js"></script>
     <script>
@@ -320,7 +321,7 @@
 
         function loadDemo() {
             var btn = document.getElementById('loadDemoBtn');
-            btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> جاري التحميل...';
+            btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> ' + ASDP.t('common.loading');
             btn.disabled = true;
 
             setTimeout(function() {
@@ -331,7 +332,7 @@
 
         function showLoaded() {
             var btn = document.getElementById('loadDemoBtn');
-            btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم تحميل البيانات';
+            btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + ASDP.t('common.loaded');
             btn.classList.add('loaded');
             btn.disabled = true;
             document.getElementById('statsBar').style.display = 'flex';

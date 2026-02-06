@@ -20,7 +20,7 @@
         <div class="header-right">
             <div class="header-logo">🚛</div>
             <div class="header-info">
-                <h1>تتبع التوصيل</h1>
+                <h1 data-i18n="track.title">تتبع التوصيل</h1>
                 <p class="order-num">#AZ-2026-0847</p>
             </div>
         </div>
@@ -48,11 +48,11 @@
                 معلومات الطلب
             </div>
             <div class="info-row">
-                <span class="label">العميل</span>
+                <span class="label" data-i18n="track.info_customer">العميل</span>
                 <span class="value">عبدالله الشمري</span>
             </div>
             <div class="info-row">
-                <span class="label">المنتج</span>
+                <span class="label" data-i18n="track.info_tank">المنتج</span>
                 <span class="value">خزان عمودي 10,000 لتر</span>
             </div>
             <div class="info-row">
@@ -60,7 +60,7 @@
                 <span class="value" style="direction:ltr; text-align:right;">BV1000</span>
             </div>
             <div class="info-row">
-                <span class="label">فئة التوصيل</span>
+                <span class="label" data-i18n="track.info_class">فئة التوصيل</span>
                 <span class="value">
                     <span class="class-badge class-c">الفئة ج - توصيل مرحلتين</span>
                 </span>
@@ -80,7 +80,7 @@
         <div class="tracking-card fade-in" style="animation-delay: 0.1s;">
             <div class="card-title-row">
                 <i class="bi bi-person-badge-fill"></i>
-                السائق
+                <span data-i18n="track.driver">السائق</span>
             </div>
             <div class="driver-card">
                 <div class="driver-avatar">
@@ -109,7 +109,7 @@
                         <i class="bi bi-check"></i>
                     </div>
                     <div class="step-content">
-                        <div class="step-label">تم تأكيد الطلب</div>
+                        <div class="step-label" data-i18n="track.step1">تم تأكيد الطلب</div>
                         <div class="step-time">2:30 م</div>
                         <div class="step-desc">تم استلام طلبك وتسجيله في النظام</div>
                     </div>
@@ -131,7 +131,7 @@
                         <i class="bi bi-check"></i>
                     </div>
                     <div class="step-content">
-                        <div class="step-label">جاري تحميل الشاحنة</div>
+                        <div class="step-label" data-i18n="track.step2">جاري تحميل الشاحنة</div>
                         <div class="step-time">8:30 م</div>
                         <div class="step-desc">الشاحنة في المستودع جاري التحميل</div>
                     </div>
@@ -142,7 +142,7 @@
                         <i class="bi bi-truck"></i>
                     </div>
                     <div class="step-content">
-                        <div class="step-label">الشاحنة في الطريق</div>
+                        <div class="step-label" data-i18n="track.step3">الشاحنة في الطريق</div>
                         <div class="step-time">9:15 م</div>
                         <div class="step-desc">السائق أحمد في الطريق إليك</div>
                     </div>
@@ -153,7 +153,7 @@
                         <i class="bi bi-geo-alt"></i>
                     </div>
                     <div class="step-content">
-                        <div class="step-label">وصلت الشاحنة</div>
+                        <div class="step-label" data-i18n="track.step4">وصلت الشاحنة</div>
                         <div class="step-time">~9:45 م</div>
                         <div class="step-desc">الشاحنة وصلت للموقع</div>
                     </div>
@@ -164,7 +164,7 @@
                         <i class="bi bi-check-all"></i>
                     </div>
                     <div class="step-content">
-                        <div class="step-label">تم التوصيل</div>
+                        <div class="step-label" data-i18n="track.step6">تم التوصيل</div>
                         <div class="step-time">--</div>
                         <div class="step-desc">تم تسليم الخزان بنجاح</div>
                     </div>
@@ -176,7 +176,7 @@
         <div class="phase2-card fade-in" style="animation-delay: 0.3s;">
             <div class="phase2-header">
                 <span class="phase2-icon">🏗️</span>
-                <span class="phase2-title">المرحلة الثانية: التركيب</span>
+                <span class="phase2-title" data-i18n="track.phase2_title">المرحلة الثانية: التركيب</span>
             </div>
             <div class="phase2-desc">
                 الشاحنة ستعود غداً الخميس 8-10 صباحاً لرفع الخزان وتركيبه على السطح بالرافعة
@@ -195,7 +195,7 @@
 <div class="celebration-banner" id="celebrationBanner">
     <div class="celebration-text">
         <i class="bi bi-check-circle-fill"></i>
-        تم التوصيل بنجاح!
+        <span data-i18n="track.celebration">تم التوصيل بنجاح!</span>
     </div>
 </div>
 
@@ -204,6 +204,7 @@
 
 <!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/shared.js"></script>
 <script src="js/mock-data.js"></script>
 
@@ -276,7 +277,7 @@
 
         L.marker(WAREHOUSE, { icon: warehouseIcon })
             .addTo(map)
-            .bindPopup('<div class="warehouse-popup"><i class="bi bi-building" style="color:#2980b9;"></i> مستودع الزامل</div>');
+            .bindPopup('<div class="warehouse-popup"><i class="bi bi-building" style="color:#2980b9;"></i> ' + ASDP.t('track.popup_warehouse', 'مستودع الزامل') + '</div>');
 
         // ---- Customer Marker ----
         var customerIcon = L.divIcon({
@@ -289,7 +290,7 @@
 
         L.marker(CUSTOMER, { icon: customerIcon })
             .addTo(map)
-            .bindPopup('<div class="customer-popup"><i class="bi bi-geo-alt-fill" style="color:#27ae60;"></i> موقع التوصيل - حي النرجس</div>');
+            .bindPopup('<div class="customer-popup"><i class="bi bi-geo-alt-fill" style="color:#27ae60;"></i> ' + ASDP.t('track.popup_customer', 'موقع التوصيل') + ' - حي النرجس</div>');
 
         // ---- Remaining Route (dashed gray) ----
         remainingRoute = L.polyline(waypoints, {
@@ -381,15 +382,13 @@
         var etaText = document.getElementById('etaText');
 
         if (remaining <= 0) {
-            etaText.textContent = 'الوصول الآن...';
+            etaText.textContent = ASDP.t('track.eta_now', 'الوصول الآن...');
         } else if (remaining === 1) {
-            etaText.textContent = 'الوصول خلال دقيقة واحدة';
-        } else if (remaining === 2) {
-            etaText.textContent = 'الوصول خلال دقيقتين';
+            etaText.textContent = ASDP.t('track.eta_one', 'الوصول خلال دقيقة واحدة');
         } else if (remaining <= 10) {
-            etaText.textContent = 'الوصول خلال ' + remaining + ' دقائق';
+            etaText.textContent = ASDP.t('track.eta_minutes', 'الوصول خلال {n} دقائق').replace('{n}', remaining);
         } else {
-            etaText.textContent = 'الوصول خلال ' + remaining + ' دقيقة';
+            etaText.textContent = ASDP.t('track.eta_minutes', 'الوصول خلال {n} دقيقة').replace('{n}', remaining);
         }
     }
 
@@ -442,7 +441,7 @@
         var etaBadge = document.getElementById('etaBadge');
         var etaText = document.getElementById('etaText');
         etaBadge.classList.add('arrived');
-        etaText.innerHTML = 'تم الوصول <i class="bi bi-check-circle-fill"></i>';
+        etaText.innerHTML = ASDP.t('track.eta_delivered', 'تم الوصول') + ' <i class="bi bi-check-circle-fill"></i>';
 
         // Show banner
         var banner = document.getElementById('celebrationBanner');

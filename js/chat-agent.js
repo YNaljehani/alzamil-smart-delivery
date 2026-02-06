@@ -6,6 +6,9 @@
 (function () {
     'use strict';
 
+    // i18n helper - short alias for ASDP.t()
+    var _t = function(k, fb) { return (typeof ASDP !== 'undefined' && ASDP.t) ? ASDP.t(k, fb) : (fb || k); };
+
     var isOpen = false;
     var welcomed = false;
     var els = {};
@@ -15,7 +18,7 @@
         // FAB
         var fab = document.createElement('button');
         fab.className = 'chat-fab';
-        fab.setAttribute('aria-label', 'المساعد الذكي');
+        fab.setAttribute('aria-label', _t('chat.name'));
         fab.innerHTML =
             '<span class="fab-icon-open"><i class="bi bi-robot"></i></span>' +
             '<span class="fab-icon-close"><i class="bi bi-x-lg"></i></span>' +
@@ -31,8 +34,8 @@
             '<div class="chat-window-header">' +
                 '<div class="chat-avatar"><i class="bi bi-robot"></i></div>' +
                 '<div class="chat-header-info">' +
-                    '<div class="chat-name">المساعد الذكي - ASDP</div>' +
-                    '<div class="chat-status"><span class="online-dot"></span> متصل الآن</div>' +
+                    '<div class="chat-name">' + _t('chat.name') + '</div>' +
+                    '<div class="chat-status"><span class="online-dot"></span> ' + _t('chat.status') + '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="chat-messages" id="chatMessages"></div>' +
@@ -41,7 +44,7 @@
             '</div>' +
             '<div class="chat-suggestions" id="chatSuggestions"></div>' +
             '<div class="chat-input-area">' +
-                '<input type="text" class="chat-input" id="chatInput" placeholder="اكتب سؤالك هنا..." autocomplete="off">' +
+                '<input type="text" class="chat-input" id="chatInput" placeholder="' + _t('chat.placeholder') + '" autocomplete="off">' +
                 '<button class="chat-send-btn" id="chatSendBtn"><i class="bi bi-send-fill"></i></button>' +
             '</div>';
         document.body.appendChild(win);
@@ -117,16 +120,16 @@
     // ========== WELCOME ==========
     function showWelcome() {
         var html =
-            '<b>مرحبا! انا المساعد الذكي لمنصة ASDP</b><br><br>' +
-            'اقدر اساعدك في:<br>' +
-            '&#8226; استعلام عن الطلبات والتوصيلات<br>' +
-            '&#8226; حالة الاسطول والمركبات<br>' +
-            '&#8226; نتائج تقييمات المواقع (SRA)<br>' +
-            '&#8226; معلومات شبكة التوزيع<br>' +
-            '&#8226; مؤشرات الاداء والاحصائيات<br><br>' +
-            '<span style="color:#6c757d; font-size:0.8rem;">جرب تسألني اي شيء!</span>';
+            '<b>' + _t('chat.welcome') + '</b><br><br>' +
+            _t('chat.welcome_body') + '<br>' +
+            '&#8226; ' + _t('chat.welcome_1') + '<br>' +
+            '&#8226; ' + _t('chat.welcome_2') + '<br>' +
+            '&#8226; ' + _t('chat.welcome_3') + '<br>' +
+            '&#8226; ' + _t('chat.welcome_4') + '<br>' +
+            '&#8226; ' + _t('chat.welcome_5') + '<br><br>' +
+            '<span style="color:#6c757d; font-size:0.8rem;">' + _t('chat.welcome_try') + '</span>';
         addMsg(html, 'agent');
-        showSuggestions(['توصيلات الليلة', 'حالة الاسطول', 'ملخص الشبكة', 'المؤشرات']);
+        showSuggestions([_t('chat.sug_tonight'), _t('chat.sug_fleet'), _t('chat.sug_network'), _t('chat.sug_kpis')]);
     }
 
     // ========== DATA ACCESS ==========
@@ -149,8 +152,8 @@
     function getDepots() { return (ASDP && ASDP.mockData) ? (ASDP.mockData.depots || []) : []; }
 
     function noData() {
-        return '<span style="color:#e74c3c;">لم يتم تحميل البيانات التجريبية بعد.</span><br>' +
-               'اذهب <b><a href="index.html" style="color:#1a5276;">للصفحة الرئيسية</a></b> واضغط "تحميل بيانات العرض التجريبي".';
+        return '<span style="color:#e74c3c;">' + _t('chat.no_data') + '</span><br>' +
+               '<b><a href="index.html" style="color:#1a5276;">' + _t('chat.no_data_link') + '</a></b>';
     }
 
     // ========== INTENT MATCHING ==========
@@ -190,38 +193,37 @@
 
     function handleGreeting() {
         return {
-            html: 'اهلا وسهلا! كيف اقدر اساعدك؟',
-            suggestions: ['توصيلات الليلة', 'حالة الاسطول', 'ملخص الشبكة', 'المؤشرات']
+            html: _t('chat.greeting'),
+            suggestions: [_t('chat.sug_tonight'), _t('chat.sug_fleet'), _t('chat.sug_network'), _t('chat.sug_kpis')]
         };
     }
 
     function handleIdentity() {
         return {
-            html: 'انا <b>المساعد الذكي</b> لمنصة الزامل الذكية للتوصيل (ASDP).<br><br>' +
-                  'مهمتي مساعدة فريق العمليات في متابعة الطلبات والاسطول وشبكة التوزيع بشكل لحظي.',
-            suggestions: ['ايش تقدر تسوي؟', 'ملخص الشبكة']
+            html: _t('chat.identity'),
+            suggestions: [_t('chat.sug_what'), _t('chat.sug_network')]
         };
     }
 
     function handleThanks() {
         return {
-            html: 'العفو! اذا تحتاج اي شيء ثاني، انا هنا.',
-            suggestions: ['توصيلات الليلة', 'حالة الاسطول']
+            html: _t('chat.thanks'),
+            suggestions: [_t('chat.sug_tonight'), _t('chat.sug_fleet')]
         };
     }
 
     function handleHelp() {
         return {
-            html: '<b>الاوامر المتاحة:</b><br><br>' +
-                  '&#8226; <b>توصيلات الليلة</b> - جدول التوصيلات<br>' +
-                  '&#8226; <b>حالة الاسطول</b> - المركبات المتاحة<br>' +
-                  '&#8226; <b>AZ-2026-0847</b> - استعلام برقم الطلب<br>' +
-                  '&#8226; <b>التقييمات</b> - نتائج SRA<br>' +
-                  '&#8226; <b>ملخص الشبكة</b> - المراكز ونقاط الخدمة<br>' +
-                  '&#8226; <b>المؤشرات</b> - مؤشرات الاداء<br>' +
-                  '&#8226; <b>الرافعات</b> - شاحنات الرافعة المخصصة<br>' +
-                  '&#8226; <b>توصية</b> - اقتراحات ذكية',
-            suggestions: ['توصيلات الليلة', 'حالة الاسطول', 'التقييمات', 'ملخص الشبكة']
+            html: '<b>' + _t('chat.help_title') + '</b><br><br>' +
+                  '&#8226; <b>' + _t('chat.sug_tonight') + '</b><br>' +
+                  '&#8226; <b>' + _t('chat.sug_fleet') + '</b><br>' +
+                  '&#8226; <b>AZ-2026-0847</b><br>' +
+                  '&#8226; <b>' + _t('chat.sug_assessments') + '</b><br>' +
+                  '&#8226; <b>' + _t('chat.sug_network') + '</b><br>' +
+                  '&#8226; <b>' + _t('chat.sug_kpis') + '</b><br>' +
+                  '&#8226; <b>' + _t('chat.sug_crane') + '</b><br>' +
+                  '&#8226; <b>' + _t('chat.sug_recommend') + '</b>',
+            suggestions: [_t('chat.sug_tonight'), _t('chat.sug_fleet'), _t('chat.sug_assessments'), _t('chat.sug_network')]
         };
     }
 
@@ -243,8 +245,8 @@
 
         if (!order) {
             return {
-                html: 'لم اجد طلب برقم <b>' + id + '</b>.<br>تأكد من الرقم وحاول مرة ثانية.',
-                suggestions: ['عرض كل الطلبات']
+                html: _t('chat.order_not_found') + ' <b>' + id + '</b>.',
+                suggestions: [_t('chat.sug_orders')]
             };
         }
 
@@ -278,24 +280,24 @@
         }
 
         var statusLabels = {
-            confirmed: 'مؤكد', assessed: 'تم التقييم', loading: 'جاري التحميل',
-            enroute: 'في الطريق', delivered: 'تم التوصيل', pending: 'قيد الانتظار', blocked: 'محظور'
+            confirmed: _t('status.confirmed', 'مؤكد'), assessed: _t('status.assessed', 'تم التقييم'), loading: _t('status.loading', 'جاري التحميل'),
+            enroute: _t('status.enroute', 'في الطريق'), delivered: _t('status.delivered', 'تم التوصيل'), pending: _t('status.pending', 'قيد الانتظار'), blocked: _t('status.blocked', 'محظور')
         };
 
-        var html = '<b>تفاصيل الطلب ' + id + '</b>' +
+        var html = '<b>' + _t('chat.order_title') + ' ' + id + '</b>' +
             '<table class="msg-mini-table">' +
-            '<tr><td>العميل</td><td><b>' + order.customer + '</b></td></tr>' +
-            '<tr><td>الحي</td><td>' + order.district + ' - ' + order.city + '</td></tr>' +
-            '<tr><td>الخزان</td><td>' + order.tank + '</td></tr>' +
-            '<tr><td>التركيب</td><td>' + (order.installation === 'rooftop' ? 'سطح' : 'ارضي') + '</td></tr>' +
-            '<tr><td>الحالة</td><td>' + (statusLabels[order.status] || order.status) + '</td></tr>' +
-            (assess ? '<tr><td>تقييم SRA</td><td>' + scoreBadge + '</td></tr>' : '') +
-            (assess ? '<tr><td>فئة التوصيل</td><td>' + classBadge + '</td></tr>' : '') +
-            (vehicle ? '<tr><td>المركبة</td><td>' + vehicle.id + ' - ' + vehicle.driver + '</td></tr>' : '') +
-            (qEntry ? '<tr><td>الموعد</td><td>' + (qEntry.scheduledTime || '-') + '</td></tr>' : '') +
+            '<tr><td>' + _t('chat.order_customer') + '</td><td><b>' + order.customer + '</b></td></tr>' +
+            '<tr><td>' + _t('chat.order_district') + '</td><td>' + order.district + ' - ' + order.city + '</td></tr>' +
+            '<tr><td>' + _t('chat.order_tank') + '</td><td>' + order.tank + '</td></tr>' +
+            '<tr><td>' + _t('chat.order_install') + '</td><td>' + (order.installation === 'rooftop' ? _t('chat.install_rooftop') : _t('chat.install_ground')) + '</td></tr>' +
+            '<tr><td>' + _t('chat.order_status') + '</td><td>' + (statusLabels[order.status] || order.status) + '</td></tr>' +
+            (assess ? '<tr><td>' + _t('chat.order_sra') + '</td><td>' + scoreBadge + '</td></tr>' : '') +
+            (assess ? '<tr><td>' + _t('chat.order_class') + '</td><td>' + classBadge + '</td></tr>' : '') +
+            (vehicle ? '<tr><td>' + _t('chat.order_vehicle') + '</td><td>' + vehicle.id + ' - ' + vehicle.driver + '</td></tr>' : '') +
+            (qEntry ? '<tr><td>' + _t('chat.order_time') + '</td><td>' + (qEntry.scheduledTime || '-') + '</td></tr>' : '') +
             '</table>';
 
-        return { html: html, suggestions: ['حالة الاسطول', 'توصيلات الليلة', 'عرض كل الطلبات'] };
+        return { html: html, suggestions: [_t('chat.sug_fleet'), _t('chat.sug_tonight'), _t('chat.sug_orders')] };
     }
 
     // ---- General Orders ----
@@ -322,19 +324,19 @@
         });
 
         var statusLabels = {
-            confirmed: 'مؤكد', assessed: 'تم التقييم', loading: 'جاري التحميل',
-            enroute: 'في الطريق', delivered: 'تم التوصيل'
+            confirmed: _t('status.confirmed', 'مؤكد'), assessed: _t('status.assessed', 'تم التقييم'), loading: _t('status.loading', 'جاري التحميل'),
+            enroute: _t('status.enroute', 'في الطريق'), delivered: _t('status.delivered', 'تم التوصيل')
         };
 
-        var html = '<b>ملخص الطلبات (' + orders.length + ' طلب)</b><br><br>';
+        var html = '<b>' + _t('chat.orders_summary') + ' (' + orders.length + ')</b><br><br>';
         for (var s in statusCount) {
             html += '&#8226; ' + (statusLabels[s] || s) + ': <b>' + statusCount[s] + '</b><br>';
         }
 
-        html += '<br><span style="color:#6c757d; font-size:0.78rem;">للاستعلام عن طلب محدد، اكتب رقم الطلب مثل AZ-2026-0847</span>';
+        html += '<br><span style="color:#6c757d; font-size:0.78rem;">' + _t('chat.orders_detail_hint') + '</span>';
 
         var ids = orders.slice(0, 3).map(function (o) { return o.id; });
-        return { html: html, suggestions: ids.concat(['توصيلات الليلة']) };
+        return { html: html, suggestions: ids.concat([_t('chat.sug_tonight')]) };
     }
 
     // ---- Fleet Status ----
@@ -352,14 +354,14 @@
             if (v.status === 'available') available.push(v);
         });
 
-        var html = '<b>حالة الاسطول (' + fleet.length + ' مركبة)</b><br><br>';
-        html += '<b>حسب النوع:</b><br>';
-        html += '&#8226; شاحنات ثقيلة: <b>' + (typeCount.heavy || 0) + '</b><br>';
-        html += '&#8226; شاحنات رافعة: <b>' + (typeCount.crane_truck || 0) + '</b><br>';
-        html += '&#8226; مركبات خفيفة: <b>' + (typeCount.light || 0) + '</b><br><br>';
+        var html = '<b>' + _t('chat.fleet_title') + ' (' + fleet.length + ')</b><br><br>';
+        html += '<b>' + _t('chat.fleet_by_type') + '</b><br>';
+        html += '&#8226; ' + _t('chat.fleet_heavy') + ': <b>' + (typeCount.heavy || 0) + '</b><br>';
+        html += '&#8226; ' + _t('chat.fleet_crane') + ': <b>' + (typeCount.crane_truck || 0) + '</b><br>';
+        html += '&#8226; ' + _t('chat.fleet_light') + ': <b>' + (typeCount.light || 0) + '</b><br><br>';
 
-        html += '<b>حسب الحالة:</b><br>';
-        var sLabels = { available: 'متاح', enroute: 'في الطريق', loading: 'جاري التحميل', maintenance: 'صيانة', lift_duty: 'مهمة رفع', scheduled: 'مجدول' };
+        html += '<b>' + _t('chat.fleet_by_status') + '</b><br>';
+        var sLabels = { available: _t('status.available', 'متاح'), enroute: _t('status.enroute', 'في الطريق'), loading: _t('status.loading', 'جاري التحميل'), maintenance: _t('status.maintenance', 'صيانة'), lift_duty: _t('status.lift_duty', 'مهمة رفع'), scheduled: _t('status.scheduled', 'مجدول') };
         for (var s in statusCount) {
             if (statusCount[s] > 0) {
                 html += '&#8226; ' + (sLabels[s] || s) + ': <b>' + statusCount[s] + '</b><br>';
@@ -367,13 +369,13 @@
         }
 
         if (available.length > 0) {
-            html += '<br><span class="msg-badge green">متاح الآن: ' + available.length + ' مركبة</span><br>';
+            html += '<br><span class="msg-badge green">' + _t('chat.fleet_available') + ': ' + available.length + '</span><br>';
             available.forEach(function (v) {
                 html += '<span style="font-size:0.78rem; color:#6c757d;">&#8226; ' + v.id + ' - ' + v.name + ' (' + v.driver + ')</span><br>';
             });
         }
 
-        return { html: html, suggestions: ['توصيلات الليلة', 'الرافعات', 'توصية'] };
+        return { html: html, suggestions: [_t('chat.sug_tonight'), _t('chat.sug_crane'), _t('chat.sug_recommend')] };
     }
 
     // ---- Tonight's Deliveries ----
@@ -388,9 +390,9 @@
         var statusCount = { loading: 0, enroute: 0, pending: 0, delivered: 0, blocked: 0 };
         queue.forEach(function (q) { statusCount[q.status] = (statusCount[q.status] || 0) + 1; });
 
-        var sLabels = { loading: 'جاري التحميل', enroute: 'في الطريق', pending: 'قيد الانتظار', delivered: 'تم التوصيل', blocked: 'محظور' };
+        var sLabels = { loading: _t('status.loading', 'جاري التحميل'), enroute: _t('status.enroute', 'في الطريق'), pending: _t('status.pending', 'قيد الانتظار'), delivered: _t('status.delivered', 'تم التوصيل'), blocked: _t('status.blocked', 'محظور') };
 
-        var html = '<b>جدول توصيلات الليلة (' + queue.length + ' توصيلة)</b><br><br>';
+        var html = '<b>' + _t('chat.tonight_title') + ' (' + queue.length + ')</b><br><br>';
         for (var s in statusCount) {
             if (statusCount[s] > 0) {
                 var color = s === 'delivered' ? 'green' : s === 'enroute' ? 'blue' : s === 'blocked' ? 'red' : s === 'loading' ? 'yellow' : 'blue';
@@ -406,7 +408,7 @@
                     (o.customer || q.orderId) + ' - ' + (o.district || '') + '</span><br>';
         });
 
-        return { html: html, suggestions: ['حالة الاسطول', 'عرض كل الطلبات', 'التقييمات'] };
+        return { html: html, suggestions: [_t('chat.sug_fleet'), _t('chat.sug_orders'), _t('chat.sug_assessments')] };
     }
 
     // ---- Assessments ----
@@ -421,24 +423,24 @@
             classCount[a.deliveryClass] = (classCount[a.deliveryClass] || 0) + 1;
         });
 
-        var html = '<b>ملخص تقييمات المواقع (SRA)</b><br><br>';
+        var html = '<b>' + _t('chat.assessments_title') + '</b><br><br>';
 
         if (dist) {
-            html += '<b>توزيع التصنيفات:</b><br>';
-            html += '<span class="msg-badge green">اخضر: ' + dist.GREEN + '%</span> ';
-            html += '<span class="msg-badge yellow">اصفر: ' + dist.YELLOW + '%</span> ';
-            html += '<span class="msg-badge red">احمر: ' + dist.RED + '%</span> ';
-            html += '<span class="msg-badge black">اسود: ' + dist.BLACK + '%</span><br><br>';
+            html += '<b>' + _t('chat.assessments_dist') + '</b><br>';
+            html += '<span class="msg-badge green">' + _t('score.GREEN.label') + ': ' + dist.GREEN + '%</span> ';
+            html += '<span class="msg-badge yellow">' + _t('score.YELLOW.label') + ': ' + dist.YELLOW + '%</span> ';
+            html += '<span class="msg-badge red">' + _t('score.RED.label') + ': ' + dist.RED + '%</span> ';
+            html += '<span class="msg-badge black">' + _t('score.BLACK.label') + ': ' + dist.BLACK + '%</span><br><br>';
         }
 
-        html += '<b>فئات التوصيل:</b><br>';
-        var classLabels = { 'A': 'فئة A (خفيف)', 'B': 'فئة B (ليلي)', 'C-1': 'فئة ج-1 (رافعة)', 'C-2': 'فئة ج-2 (تصريح)', 'D': 'فئة D (مشكلة)' };
+        html += '<b>' + _t('chat.assessments_classes') + '</b><br>';
+        var classLabels = { 'A': _t('class.A.label'), 'B': _t('class.B.label'), 'C-1': _t('class.C1.label'), 'C-2': _t('class.C2.label'), 'D': _t('class.D.label') };
         for (var c in classCount) {
             var cc = c === 'A' ? 'green' : c === 'B' ? 'blue' : c === 'C-1' ? 'teal' : c === 'C-2' ? 'yellow' : 'red';
             html += '<span class="msg-badge ' + cc + '">' + (classLabels[c] || c) + ': ' + classCount[c] + '</span> ';
         }
 
-        return { html: html, suggestions: ['عرض كل الطلبات', 'توصيلات الليلة', 'المؤشرات'] };
+        return { html: html, suggestions: [_t('chat.sug_orders'), _t('chat.sug_tonight'), _t('chat.sug_kpis')] };
     }
 
     // ---- Network ----
@@ -447,7 +449,7 @@
         var depots = getDepots();
 
         if (!hubs.length) {
-            return { html: 'بيانات الشبكة غير متوفرة حاليا.', suggestions: ['المؤشرات'] };
+            return { html: _t('chat.no_data'), suggestions: [_t('chat.sug_kpis')] };
         }
 
         var totalHeavy = 0, totalCrane = 0, totalLight = 0, totalOrders = 0;
@@ -458,24 +460,23 @@
             totalOrders += h.ordersToday;
         });
 
-        var html = '<b>شبكة التوزيع - Hub & Spoke</b><br><br>';
-        html += '<span class="msg-badge teal">' + hubs.length + ' مراكز اقليمية</span> ';
-        html += '<span class="msg-badge yellow">' + depots.length + ' نقطة خدمة</span><br><br>';
+        var html = '<b>' + _t('chat.network_title') + '</b><br><br>';
+        html += '<span class="msg-badge teal">' + hubs.length + ' ' + _t('chat.network_hubs') + '</span> ';
+        html += '<span class="msg-badge yellow">' + depots.length + ' ' + _t('chat.network_depots') + '</span><br><br>';
 
-        html += '<b>المراكز الاقليمية:</b><br>';
         hubs.forEach(function (h) {
             var total = h.fleet.heavy + h.fleet.craneTruck + h.fleet.light;
             html += '&#8226; <b>' + h.name.replace('المركز الإقليمي - ', '') + '</b>: ' +
-                    total + ' مركبة | ' + h.ordersToday + ' طلب<br>';
+                    total + ' | ' + h.ordersToday + '<br>';
         });
 
-        html += '<br><b>اجمالي الاسطول:</b><br>';
-        html += '&#8226; شاحنات ثقيلة: <b>' + totalHeavy + '</b><br>';
-        html += '&#8226; شاحنات رافعة: <b>' + totalCrane + '</b><br>';
-        html += '&#8226; مركبات خفيفة (مراكز): <b>' + totalLight + '</b><br>';
-        html += '&#8226; طلبات اليوم: <b>' + totalOrders + '</b>';
+        html += '<br><b>' + _t('chat.network_total_fleet') + '</b><br>';
+        html += '&#8226; ' + _t('chat.fleet_heavy') + ': <b>' + totalHeavy + '</b><br>';
+        html += '&#8226; ' + _t('chat.fleet_crane') + ': <b>' + totalCrane + '</b><br>';
+        html += '&#8226; ' + _t('chat.fleet_light') + ': <b>' + totalLight + '</b><br>';
+        html += '&#8226; ' + _t('chat.network_orders_today') + ' <b>' + totalOrders + '</b>';
 
-        return { html: html, suggestions: ['حالة الاسطول', 'المؤشرات', 'الرافعات'] };
+        return { html: html, suggestions: [_t('chat.sug_fleet'), _t('chat.sug_kpis'), _t('chat.sug_crane')] };
     }
 
     // ---- KPIs ----
@@ -483,30 +484,31 @@
         var kpi = getKPI();
         var queue = getQueue();
 
-        var html = '<b>مؤشرات الاداء الرئيسية</b><br><br>';
+        var html = '<b>' + _t('chat.kpi_title') + '</b><br><br>';
 
         if (kpi.deliveries) {
             var totalDel = kpi.deliveries.reduce(function (a, b) { return a + b; }, 0);
             var avgDel = Math.round(totalDel / kpi.deliveries.length);
-            html += '&#8226; متوسط التوصيلات اليومي: <b>' + avgDel + '</b><br>';
+            html += '&#8226; ' + _t('chat.kpi_avg_daily') + ' <b>' + avgDel + '</b><br>';
         }
 
         if (kpi.successRate) {
             var avgSuccess = Math.round(kpi.successRate.reduce(function (a, b) { return a + b; }, 0) / kpi.successRate.length);
-            html += '&#8226; متوسط نسبة النجاح: <span class="msg-badge green"><b>' + avgSuccess + '%</b></span><br>';
+            html += '&#8226; ' + _t('chat.kpi_avg_success') + ' <span class="msg-badge green"><b>' + avgSuccess + '%</b></span><br>';
         }
 
         if (kpi.failedBefore && kpi.failedAfter) {
             var totalBefore = kpi.failedBefore.reduce(function (a, b) { return a + b; }, 0);
             var totalAfter = kpi.failedAfter.reduce(function (a, b) { return a + b; }, 0);
             var reduction = totalBefore > 0 ? Math.round(((totalBefore - totalAfter) / totalBefore) * 100) : 0;
-            html += '&#8226; تخفيض التوصيلات الفاشلة: <span class="msg-badge green"><b>' + reduction + '%</b></span><br>';
-            html += '  <span style="font-size:0.75rem; color:#6c757d;">قبل: ' + totalBefore + ' | بعد: ' + totalAfter + ' (اسبوعيا)</span><br>';
+            html += '&#8226; ' + _t('chat.kpi_reduction') + ' <span class="msg-badge green"><b>' + reduction + '%</b></span><br>';
+            var beforeAfter = _t('chat.kpi_before_after').replace('{b}', totalBefore).replace('{a}', totalAfter);
+            html += '  <span style="font-size:0.75rem; color:#6c757d;">' + beforeAfter + '</span><br>';
         }
 
         if (kpi.scoreDistribution) {
             var d = kpi.scoreDistribution;
-            html += '<br><b>توزيع تقييمات المواقع:</b><br>';
+            html += '<br><b>' + _t('chat.assessments_dist') + '</b><br>';
             html += '<span class="msg-badge green">' + d.GREEN + '%</span> ';
             html += '<span class="msg-badge yellow">' + d.YELLOW + '%</span> ';
             html += '<span class="msg-badge red">' + d.RED + '%</span> ';
@@ -514,10 +516,10 @@
         }
 
         if (queue.length > 0) {
-            html += '<br><br>&#8226; توصيلات الليلة: <b>' + queue.length + '</b>';
+            html += '<br><br>&#8226; ' + _t('chat.kpi_tonight') + ' <b>' + queue.length + '</b>';
         }
 
-        return { html: html, suggestions: ['توصيلات الليلة', 'التقييمات', 'ملخص الشبكة'] };
+        return { html: html, suggestions: [_t('chat.sug_tonight'), _t('chat.sug_assessments'), _t('chat.sug_network')] };
     }
 
     // ---- Crane Trucks ----
@@ -526,12 +528,12 @@
         var hubs = getHubs();
 
         var craneTrucks = fleet.filter(function (v) { return v.type === 'crane_truck'; });
-        var html = '<b>شاحنات الرافعة المخصصة</b><br><br>';
+        var html = '<b>' + _t('chat.crane_title') + '</b><br><br>';
 
         if (craneTrucks.length > 0) {
-            html += '<b>الاسطول الحالي (' + craneTrucks.length + ' شاحنة):</b><br>';
+            html += '<b>' + _t('chat.crane_fleet') + ' (' + craneTrucks.length + '):</b><br>';
             craneTrucks.forEach(function (ct) {
-                var sLabels = { available: 'متاح', enroute: 'في الطريق', loading: 'جاري التحميل', maintenance: 'صيانة' };
+                var sLabels = { available: _t('status.available', 'متاح'), enroute: _t('status.enroute', 'في الطريق'), loading: _t('status.loading', 'جاري التحميل'), maintenance: _t('status.maintenance', 'صيانة') };
                 var sColor = ct.status === 'available' ? 'green' : ct.status === 'enroute' ? 'blue' : 'yellow';
                 html += '&#8226; <b>' + ct.id + '</b> (' + ct.craneClass + ') - ' + ct.floors +
                         ' <span class="msg-badge ' + sColor + '">' + (sLabels[ct.status] || ct.status) + '</span><br>';
@@ -539,22 +541,23 @@
         }
 
         if (hubs.length > 0) {
-            html += '<br><b>التوزيع على المراكز:</b><br>';
+            html += '<br><b>' + _t('chat.crane_dist') + '</b><br>';
             var totalCranes = 0;
             hubs.forEach(function (h) {
                 if (h.fleet.craneTruck > 0) {
-                    html += '&#8226; ' + h.name.replace('المركز الإقليمي - ', '') + ': <b>' + h.fleet.craneTruck + '</b>';
-                    if (h.craneUtilization > 0) html += ' (استخدام: ' + h.craneUtilization + '%)';
+                    var hubName = (h.nameEn && ASDP.lang() === 'en') ? h.nameEn : h.name.replace('المركز الإقليمي - ', '');
+                    html += '&#8226; ' + hubName + ': <b>' + h.fleet.craneTruck + '</b>';
+                    if (h.craneUtilization > 0) html += ' (' + _t('chat.utilization') + ' ' + h.craneUtilization + '%)';
                     html += '<br>';
                     totalCranes += h.fleet.craneTruck;
                 }
             });
-            html += '<br><b>اجمالي الشاحنات الرافعة: ' + totalCranes + '</b>';
+            html += '<br><b>' + _t('chat.crane_total') + ' ' + totalCranes + '</b>';
         }
 
-        html += '<br><br><span style="font-size:0.78rem; color:#6c757d;">الشاحنات الرافعة المخصصة لا تحتاج تصريح دخول المدينة وتوصل + تركب في رحلة واحدة نهارية (فئة ج-1)</span>';
+        html += '<br><br><span style="font-size:0.78rem; color:#6c757d;">' + _t('chat.crane_note') + '</span>';
 
-        return { html: html, suggestions: ['حالة الاسطول', 'التقييمات', 'ملخص الشبكة'] };
+        return { html: html, suggestions: [_t('chat.sug_fleet'), _t('chat.sug_assessments'), _t('chat.sug_network')] };
     }
 
     // ---- Smart Recommendation ----
@@ -566,7 +569,7 @@
 
         if (!orders.length) return { html: noData(), suggestions: [] };
 
-        var html = '<b>توصيات المساعد الذكي</b><br><br>';
+        var html = '<b>' + _t('chat.recommend_title') + '</b><br><br>';
         var tips = [];
 
         // Check for unassigned orders
@@ -576,18 +579,19 @@
         var availableVehicles = fleet.filter(function (v) { return v.status === 'available'; });
 
         if (blockedOrders.length > 0) {
-            tips.push('<span class="msg-badge red">تنبيه:</span> يوجد <b>' + blockedOrders.length + '</b> طلب محظور يحتاج معالجة خاصة (تصنيف RED/BLACK).');
+            tips.push('<span class="msg-badge red">' + _t('chat.alert') + '</span> ' + _t('chat.recommend_blocked').replace('{n}', blockedOrders.length));
         }
 
         if (availableVehicles.length > 0) {
-            tips.push('<span class="msg-badge green">فرصة:</span> يوجد <b>' + availableVehicles.length + '</b> مركبة متاحة يمكن تخصيصها لطلبات جديدة.');
+            tips.push('<span class="msg-badge green">' + _t('chat.opportunity') + '</span> ' + _t('chat.recommend_available').replace('{n}', availableVehicles.length));
         }
 
         // Check crane utilization
         var hubs = getHubs();
         hubs.forEach(function (h) {
             if (h.craneUtilization > 85) {
-                tips.push('<span class="msg-badge yellow">تحذير:</span> استخدام الرافعات في <b>' + h.name.replace('المركز الإقليمي - ', '') + '</b> مرتفع (' + h.craneUtilization + '%). فكر في تحويل بعض الطلبات.');
+                var hubName = (h.nameEn && ASDP.lang() === 'en') ? h.nameEn : h.name.replace('المركز الإقليمي - ', '');
+                tips.push('<span class="msg-badge yellow">' + _t('chat.warning') + '</span> ' + _t('chat.recommend_util').replace('{hub}', hubName).replace('{pct}', h.craneUtilization));
             }
         });
 
@@ -595,37 +599,38 @@
         var depots = getDepots();
         var lowStock = depots.filter(function (d) { return d.stockLevel < 50; });
         if (lowStock.length > 0) {
-            tips.push('<span class="msg-badge yellow">مخزون:</span> ' + lowStock.length + ' نقاط خدمة مخزونها اقل من 50% (' +
-                lowStock.map(function (d) { return d.name.replace('نقطة خدمة - ', ''); }).join('، ') + ').');
+            var sep = ASDP.lang() === 'en' ? ', ' : '، ';
+            tips.push('<span class="msg-badge yellow">' + _t('chat.stock_warning') + '</span> ' + lowStock.length + ' ' + _t('chat.recommend_stock') + ' (' +
+                lowStock.map(function (d) { return d.nameEn && ASDP.lang() === 'en' ? d.nameEn : d.name.replace('نقطة خدمة - ', ''); }).join(sep) + ').');
         }
 
         // Check maintenance
         var maintenanceV = fleet.filter(function (v) { return v.status === 'maintenance'; });
         if (maintenanceV.length > 0) {
-            tips.push('<span class="msg-badge blue">صيانة:</span> ' + maintenanceV.length + ' مركبة في الصيانة (' +
-                maintenanceV.map(function (v) { return v.id; }).join('، ') + ').');
+            tips.push('<span class="msg-badge blue">' + _t('chat.maintenance_label') + '</span> ' + maintenanceV.length + ' ' + _t('chat.recommend_maintenance') + ' (' +
+                maintenanceV.map(function (v) { return v.id; }).join(ASDP.lang() === 'en' ? ', ' : '، ') + ').');
         }
 
         if (tips.length === 0) {
-            tips.push('كل شيء يعمل بشكل ممتاز! لا توجد تنبيهات حالية.');
+            tips.push(_t('chat.recommend_all_good'));
         }
 
         tips.forEach(function (tip) { html += tip + '<br><br>'; });
 
-        return { html: html, suggestions: ['حالة الاسطول', 'توصيلات الليلة', 'ملخص الشبكة'] };
+        return { html: html, suggestions: [_t('chat.sug_fleet'), _t('chat.sug_tonight'), _t('chat.sug_network')] };
     }
 
     // ---- Unknown ----
     function handleUnknown() {
         return {
-            html: 'عذرا، ما فهمت السؤال. جرب تسألني عن:<br><br>' +
-                  '&#8226; الطلبات والتوصيلات<br>' +
-                  '&#8226; حالة الاسطول<br>' +
-                  '&#8226; تقييمات المواقع<br>' +
-                  '&#8226; شبكة التوزيع<br>' +
-                  '&#8226; مؤشرات الاداء<br><br>' +
-                  'او اكتب <b>مساعدة</b> لعرض كل الاوامر.',
-            suggestions: ['مساعدة', 'توصيلات الليلة', 'حالة الاسطول', 'ملخص الشبكة']
+            html: _t('chat.unknown') + '<br><br>' +
+                  '&#8226; ' + _t('chat.unknown_1') + '<br>' +
+                  '&#8226; ' + _t('chat.unknown_2') + '<br>' +
+                  '&#8226; ' + _t('chat.unknown_3') + '<br>' +
+                  '&#8226; ' + _t('chat.unknown_4') + '<br>' +
+                  '&#8226; ' + _t('chat.unknown_5') + '<br><br>' +
+                  _t('chat.unknown_help'),
+            suggestions: [_t('chat.sug_help'), _t('chat.sug_tonight'), _t('chat.sug_fleet'), _t('chat.sug_network')]
         };
     }
 

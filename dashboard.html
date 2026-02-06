@@ -19,12 +19,12 @@
             <span>ASDP</span>
         </a>
         <ul class="nav-links">
-            <li><a href="index.html"><i class="bi bi-house"></i> الرئيسية</a></li>
-            <li><a href="sra-form.html"><i class="bi bi-clipboard-check"></i> تقييم الموقع</a></li>
-            <li><a href="dashboard.html"><i class="bi bi-grid-1x2"></i> لوحة التحكم</a></li>
-            <li><a href="network.html"><i class="bi bi-diagram-3"></i> شبكة التوزيع</a></li>
-            <li><a href="tracking.html"><i class="bi bi-geo-alt"></i> التتبع</a></li>
-            <li><a href="whatsapp.html"><i class="bi bi-whatsapp"></i> الإشعارات</a></li>
+            <li><a href="index.html"><i class="bi bi-house"></i> <span data-i18n="nav.home">الرئيسية</span></a></li>
+            <li><a href="sra-form.html"><i class="bi bi-clipboard-check"></i> <span data-i18n="nav.sra">تقييم الموقع</span></a></li>
+            <li><a href="dashboard.html"><i class="bi bi-grid-1x2"></i> <span data-i18n="nav.dashboard">لوحة التحكم</span></a></li>
+            <li><a href="network.html"><i class="bi bi-diagram-3"></i> <span data-i18n="nav.network">شبكة التوزيع</span></a></li>
+            <li><a href="tracking.html"><i class="bi bi-geo-alt"></i> <span data-i18n="nav.tracking">التتبع</span></a></li>
+            <li><a href="whatsapp.html"><i class="bi bi-whatsapp"></i> <span data-i18n="nav.notifications">الإشعارات</span></a></li>
         </ul>
     </nav>
 
@@ -38,14 +38,14 @@
                 <span id="todayDate"></span>
             </div>
             <div class="header-shift">
-                <span>الوردية الحالية:</span>
+                <span data-i18n="dash.shift_label">الوردية الحالية:</span>
                 <span class="shift-badge">
                     <i class="bi bi-clock-fill"></i>
-                    التحضير (6م - 9م)
+                    <span data-i18n="dash.shift_prep">التحضير (6م - 9م)</span>
                 </span>
             </div>
             <div class="header-user">
-                <span>مدير العمليات</span>
+                <span data-i18n="dash.user_role">مدير العمليات</span>
                 <div class="user-avatar">
                     <i class="bi bi-person-fill"></i>
                 </div>
@@ -66,7 +66,7 @@
                     </span>
                 </div>
                 <div class="kpi-value-big" data-counter="12" data-suffix="">0</div>
-                <div class="kpi-label-text">توصيلات الليلة</div>
+                <div class="kpi-label-text" data-i18n="dash.kpi_deliveries">توصيلات الليلة</div>
             </div>
 
             <!-- KPI 2: Success Rate -->
@@ -81,7 +81,7 @@
                     </span>
                 </div>
                 <div class="kpi-value-big" data-counter="94" data-suffix="%">0</div>
-                <div class="kpi-label-text">نسبة النجاح</div>
+                <div class="kpi-label-text" data-i18n="dash.kpi_success">نسبة النجاح</div>
             </div>
 
             <!-- KPI 3: Completed Assessments -->
@@ -96,7 +96,7 @@
                     </span>
                 </div>
                 <div class="kpi-value-big" data-counter="47" data-suffix="">0</div>
-                <div class="kpi-label-text">تقييمات مكتملة</div>
+                <div class="kpi-label-text" data-i18n="dash.kpi_assessments">تقييمات مكتملة</div>
             </div>
 
             <!-- KPI 4: Monthly Savings -->
@@ -111,7 +111,7 @@
                     </span>
                 </div>
                 <div class="kpi-value-big" data-counter="1.2" data-suffix="M" data-decimal="true">0</div>
-                <div class="kpi-label-text">التوفير الشهري (ر.س)</div>
+                <div class="kpi-label-text" data-i18n="dash.kpi_savings">التوفير الشهري (ر.س)</div>
             </div>
         </div>
 
@@ -122,15 +122,15 @@
                     <div style="display:flex; align-items:center; gap:0.75rem;">
                         <i class="bi bi-diagram-3" style="font-size:1.8rem; opacity:0.9;"></i>
                         <div>
-                            <div style="font-weight:800; font-size:1.1rem;">شبكة التوزيع - Hub & Spoke</div>
-                            <div style="opacity:0.8; font-size:0.8rem;">6 مراكز إقليمية | 18 نقطة خدمة | شبكة توزيع متكاملة</div>
+                            <div style="font-weight:800; font-size:1.1rem;" data-i18n="dash.network_title">شبكة التوزيع - Hub & Spoke</div>
+                            <div style="opacity:0.8; font-size:0.8rem;" data-i18n="dash.network_desc">6 مراكز إقليمية | 18 نقطة خدمة | شبكة توزيع متكاملة</div>
                         </div>
                     </div>
                     <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
-                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800;">90</div><div style="font-size:0.7rem; opacity:0.8;">شاحنة ثقيلة</div></div>
-                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800;">8</div><div style="font-size:0.7rem; opacity:0.8;">شاحنة رافعة</div></div>
-                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800;">36</div><div style="font-size:0.7rem; opacity:0.8;">مركبة خفيفة</div></div>
-                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800; color:#2ecc71;">78%</div><div style="font-size:0.7rem; opacity:0.8;">استخدام الرافعات</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800;">90</div><div style="font-size:0.7rem; opacity:0.8;" data-i18n="dash.network_heavy">شاحنة ثقيلة</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800;">8</div><div style="font-size:0.7rem; opacity:0.8;" data-i18n="dash.network_crane">شاحنة رافعة</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800;">36</div><div style="font-size:0.7rem; opacity:0.8;" data-i18n="dash.network_light">مركبة خفيفة</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.3rem; font-weight:800; color:#2ecc71;">78%</div><div style="font-size:0.7rem; opacity:0.8;" data-i18n="dash.network_util">استخدام الرافعات</div></div>
                     </div>
                     <i class="bi bi-arrow-left" style="font-size:1.2rem; opacity:0.6;"></i>
                 </div>
@@ -141,19 +141,19 @@
         <div class="timeline-section stagger-3">
             <div class="section-title">
                 <i class="bi bi-clock-history text-brand"></i>
-                جدول الورديات الليلية
+                <span data-i18n="dash.timeline_title">جدول الورديات الليلية</span>
             </div>
             <div class="timeline-bar" id="timelineBar">
                 <div class="timeline-segment prep">
-                    <span class="segment-name">تحضير</span>
+                    <span class="segment-name" data-i18n="dash.timeline_prep">تحضير</span>
                     <span class="segment-time">6م - 9م</span>
                 </div>
                 <div class="timeline-segment delivery">
-                    <span class="segment-name">توصيل</span>
+                    <span class="segment-name" data-i18n="dash.timeline_delivery">توصيل</span>
                     <span class="segment-time">9م - 5ص</span>
                 </div>
                 <div class="timeline-segment wrapup">
-                    <span class="segment-name">إنهاء</span>
+                    <span class="segment-name" data-i18n="dash.timeline_wrapup">إنهاء</span>
                     <span class="segment-time">5ص - 6ص</span>
                 </div>
                 <!-- Pulsing marker for current time -->
@@ -173,7 +173,7 @@
             <div class="section-header">
                 <div class="section-title" style="margin-bottom: 0;">
                     <i class="bi bi-truck text-brand"></i>
-                    جدول توصيلات الليلة
+                    <span data-i18n="dash.queue_title">جدول توصيلات الليلة</span>
                 </div>
                 <span class="badge-count" id="queueCount">0 توصيلات</span>
             </div>
@@ -182,16 +182,16 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>رقم الطلب</th>
-                            <th>العميل</th>
-                            <th>الحي</th>
-                            <th>الخزان</th>
-                            <th>تقييم الموقع</th>
-                            <th>فئة التوصيل</th>
-                            <th>المركبة</th>
-                            <th>السائق</th>
-                            <th>الحالة</th>
-                            <th>الوصول المتوقع</th>
+                            <th data-i18n="dash.th_order">رقم الطلب</th>
+                            <th data-i18n="dash.th_customer">العميل</th>
+                            <th data-i18n="dash.th_district">الحي</th>
+                            <th data-i18n="dash.th_tank">الخزان</th>
+                            <th data-i18n="dash.th_sra">تقييم الموقع</th>
+                            <th data-i18n="dash.th_class">فئة التوصيل</th>
+                            <th data-i18n="dash.th_vehicle">المركبة</th>
+                            <th data-i18n="dash.th_driver">السائق</th>
+                            <th data-i18n="dash.th_status">الحالة</th>
+                            <th data-i18n="dash.th_eta">الوصول المتوقع</th>
                         </tr>
                     </thead>
                     <tbody id="queueBody">
@@ -207,7 +207,7 @@
             <div class="chart-card">
                 <div class="chart-title">
                     <i class="bi bi-pie-chart-fill text-brand"></i>
-                    توزيع تقييمات المواقع
+                    <span data-i18n="dash.chart_score">توزيع تقييمات المواقع</span>
                 </div>
                 <div class="chart-wrapper doughnut-wrap">
                     <canvas id="scoreDistChart"></canvas>
@@ -217,7 +217,7 @@
             <div class="chart-card">
                 <div class="chart-title">
                     <i class="bi bi-bar-chart-fill text-brand"></i>
-                    التوصيلات اليومية (آخر 7 أيام)
+                    <span data-i18n="dash.chart_daily">التوصيلات اليومية (آخر 7 أيام)</span>
                 </div>
                 <div class="chart-wrapper">
                     <canvas id="dailyDeliveriesChart"></canvas>
@@ -229,7 +229,7 @@
         <div class="fleet-section stagger-6" id="fleetSection">
             <div class="section-title">
                 <i class="bi bi-truck text-brand"></i>
-                حالة الأسطول
+                <span data-i18n="dash.fleet_title">حالة الأسطول</span>
             </div>
             <div class="fleet-grid" id="fleetGrid">
                 <!-- Populated by JS -->
@@ -238,8 +238,8 @@
 
         <!-- Footer -->
         <div class="dashboard-footer">
-            <p>MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
-            <p>Alzamil Smart Delivery Platform (ASDP) v1.0 - February 2026</p>
+            <p data-i18n="common.footer1">MBSC MiM - Integrated Management Challenge | Hackathon Prototype</p>
+            <p data-i18n="common.footer2">Alzamil Smart Delivery Platform (ASDP) v1.0 - February 2026</p>
         </div>
     </div>
 
@@ -247,16 +247,17 @@
     <div class="page-container" id="noDataWarning" style="display: none;">
         <div class="no-data-warning">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <h3>لا توجد بيانات تجريبية</h3>
-            <p>يرجى تحميل البيانات التجريبية أولاً من الصفحة الرئيسية لعرض لوحة التحكم</p>
+            <h3 data-i18n="common.no_data">لا توجد بيانات تجريبية</h3>
+            <p data-i18n="common.no_data_desc">يرجى تحميل البيانات التجريبية أولاً من الصفحة الرئيسية لعرض لوحة التحكم</p>
             <a href="index.html" class="btn-brand">
                 <i class="bi bi-house"></i>
-                الذهاب للصفحة الرئيسية
+                <span data-i18n="common.go_home">الذهاب للصفحة الرئيسية</span>
             </a>
         </div>
     </div>
 
     <!-- ========== SCRIPTS ========== -->
+    <script src="js/i18n.js"></script>
     <script src="js/shared.js"></script>
     <script src="js/scoring.js"></script>
     <script src="js/mock-data.js"></script>
@@ -294,7 +295,7 @@
 
         // ---- 3. Set Today's Date ----
         var todayEl = document.getElementById('todayDate');
-        todayEl.textContent = new Intl.DateTimeFormat('ar-SA', {
+        todayEl.textContent = new Intl.DateTimeFormat(ASDP.format._locale(), {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -347,7 +348,7 @@
         var countEl = document.getElementById('queueCount');
         tbody.innerHTML = '';
 
-        countEl.textContent = queue.length + ' توصيلات';
+        countEl.textContent = queue.length + ' ' + ASDP.t('dash.deliveries_count', 'توصيلات');
 
         queue.forEach(function(item, idx) {
             var order = ordersMap[item.orderId] || {};
@@ -419,7 +420,7 @@
             if (item.vehicleId && vehicle.id) {
                 tdVehicle.innerHTML = '<span class="vehicle-id">' + vehicle.id + '</span>';
             } else {
-                tdVehicle.innerHTML = '<span style="color:#e74c3c; font-weight:700;">غير محدد</span>';
+                tdVehicle.innerHTML = '<span style="color:#e74c3c; font-weight:700;">' + ASDP.t('dash.unassigned', 'غير محدد') + '</span>';
             }
             tr.appendChild(tdVehicle);
 
@@ -449,14 +450,7 @@
     }
 
     function buildStatusBadge(status) {
-        var labels = {
-            loading: 'جاري التحميل',
-            enroute: 'في الطريق',
-            delivered: 'تم التوصيل',
-            pending: 'قيد الانتظار',
-            blocked: 'محظور'
-        };
-        var label = labels[status] || status;
+        var label = ASDP.text.statuses[status] || status;
         return '<span class="delivery-status status-' + status + '">' +
                '<span class="status-dot-sm"></span>' +
                label + '</span>';
@@ -473,7 +467,7 @@
         new Chart(doughnutCtx, {
             type: 'doughnut',
             data: {
-                labels: ['أخضر', 'أصفر', 'أحمر', 'أسود'],
+                labels: ASDP.t('dash.chart_colors'),
                 datasets: [{
                     data: [dist.GREEN, dist.YELLOW, dist.RED, dist.BLACK],
                     backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c', '#2c3e50'],
@@ -490,8 +484,8 @@
                 plugins: {
                     legend: {
                         position: 'right',
-                        rtl: true,
-                        textDirection: 'rtl',
+                        rtl: ASDP.isRTL(),
+                        textDirection: ASDP.isRTL() ? 'rtl' : 'ltr',
                         labels: {
                             font: {
                                 family: 'Tajawal',
@@ -519,8 +513,8 @@
                         }
                     },
                     tooltip: {
-                        rtl: true,
-                        textDirection: 'rtl',
+                        rtl: ASDP.isRTL(),
+                        textDirection: ASDP.isRTL() ? 'rtl' : 'ltr',
                         bodyFont: { family: 'Tajawal' },
                         titleFont: { family: 'Tajawal' },
                         callbacks: {
@@ -539,7 +533,7 @@
 
         // ----- Bar: Daily Deliveries -----
         var deliveries = kpiHistory.deliveries || [12, 15, 11, 18, 14, 16, 8];
-        var days = kpiHistory.dates || ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+        var days = kpiHistory.dates || ASDP.t('dash.weekdays');
 
         var barCtx = document.getElementById('dailyDeliveriesChart').getContext('2d');
         new Chart(barCtx, {
@@ -547,7 +541,7 @@
             data: {
                 labels: days,
                 datasets: [{
-                    label: 'عدد التوصيلات',
+                    label: ASDP.t('dash.chart_label', 'عدد التوصيلات'),
                     data: deliveries,
                     backgroundColor: function(ctx) {
                         var gradient = barCtx.createLinearGradient(0, 0, 0, 300);
@@ -579,7 +573,7 @@
                     },
                     y: {
                         beginAtZero: true,
-                        position: 'right',
+                        position: ASDP.isRTL() ? 'right' : 'left',
                         grid: {
                             color: 'rgba(0,0,0,0.05)',
                             drawBorder: false
@@ -598,8 +592,8 @@
                 plugins: {
                     legend: {
                         position: 'right',
-                        rtl: true,
-                        textDirection: 'rtl',
+                        rtl: ASDP.isRTL(),
+                        textDirection: ASDP.isRTL() ? 'rtl' : 'ltr',
                         labels: {
                             font: {
                                 family: 'Tajawal',
@@ -611,13 +605,13 @@
                         }
                     },
                     tooltip: {
-                        rtl: true,
-                        textDirection: 'rtl',
+                        rtl: ASDP.isRTL(),
+                        textDirection: ASDP.isRTL() ? 'rtl' : 'ltr',
                         bodyFont: { family: 'Tajawal' },
                         titleFont: { family: 'Tajawal' },
                         callbacks: {
                             label: function(ctx) {
-                                return 'التوصيلات: ' + ctx.parsed.y;
+                                return ASDP.t('dash.chart_label') + ': ' + ctx.parsed.y;
                             }
                         }
                     }
@@ -644,11 +638,11 @@
         };
 
         var statusLabels = {
-            available: 'متاح',
-            enroute: 'في الطريق',
-            loading: 'جاري التحميل',
-            maintenance: 'صيانة',
-            scheduled: 'مجدول'
+            available: ASDP.t('status.available', 'متاح'),
+            enroute: ASDP.t('status.enroute', 'في الطريق'),
+            loading: ASDP.t('status.loading', 'جاري التحميل'),
+            maintenance: ASDP.t('status.maintenance', 'صيانة'),
+            scheduled: ASDP.t('status.scheduled', 'مجدول')
         };
 
         var statusClasses = {
@@ -671,7 +665,7 @@
 
             // Crane badge
             if (v.crane) {
-                html += '<div class="crane-badge"><i class="bi bi-arrow-up-circle-fill"></i> رافعة</div>';
+                html += '<div class="crane-badge"><i class="bi bi-arrow-up-circle-fill"></i> ' + ASDP.t('dash.crane_badge', 'رافعة') + '</div>';
             }
 
             html += '<div class="fleet-icon">' + icon + '</div>';
