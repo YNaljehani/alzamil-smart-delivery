@@ -114,5 +114,83 @@ ASDP.mockData = {
             [24.8320, 46.6215], [24.8350, 46.6210], [24.8370, 46.6205],
             [24.8400, 46.6200]
         ]
-    }
+    },
+
+    // ---- Hub-and-Spoke Network ----
+    hubs: [
+        {
+            id: 'HUB-C', name: 'المركز الإقليمي - الرياض', nameEn: 'Central Hub - Riyadh',
+            region: 'الوسطى', tier: 'hub',
+            lat: 24.7136, lng: 46.6753,
+            fleet: { heavy: 28, craneTruck: 3, light: 12 },
+            craneUtilization: 82,
+            inventory: { totalSKUs: 145, fastMovers: 45, slowMovers: 100 },
+            maintenance: { active: 3, scheduled: 5, baysTotal: 8 },
+            ordersToday: 38, ordersThisWeek: 215,
+            depots: ['DEP-KHJ', 'DEP-QAS'],
+            crossdockTonight: [
+                { to: 'DEP-KHJ', items: 12, status: 'scheduled', time: '22:00' },
+                { to: 'DEP-QAS', items: 8, status: 'scheduled', time: '23:30' }
+            ]
+        },
+        {
+            id: 'HUB-W', name: 'المركز الإقليمي - جدة', nameEn: 'Western Hub - Jeddah',
+            region: 'الغربية', tier: 'hub',
+            lat: 21.4858, lng: 39.1925,
+            fleet: { heavy: 22, craneTruck: 2, light: 10 },
+            craneUtilization: 75,
+            inventory: { totalSKUs: 130, fastMovers: 40, slowMovers: 90 },
+            maintenance: { active: 2, scheduled: 4, baysTotal: 6 },
+            ordersToday: 29, ordersThisWeek: 178,
+            depots: ['DEP-MAK', 'DEP-MED', 'DEP-TAF'],
+            crossdockTonight: [
+                { to: 'DEP-MAK', items: 15, status: 'loading', time: '21:00' },
+                { to: 'DEP-MED', items: 6, status: 'scheduled', time: '23:00' },
+                { to: 'DEP-TAF', items: 4, status: 'scheduled', time: '00:30' }
+            ]
+        },
+        {
+            id: 'HUB-E', name: 'المركز الإقليمي - الدمام', nameEn: 'Eastern Hub - Dammam',
+            region: 'الشرقية', tier: 'hub',
+            lat: 26.4207, lng: 50.0888,
+            fleet: { heavy: 24, craneTruck: 2, light: 8 },
+            craneUtilization: 88,
+            inventory: { totalSKUs: 135, fastMovers: 42, slowMovers: 93 },
+            maintenance: { active: 1, scheduled: 3, baysTotal: 6 },
+            ordersToday: 32, ordersThisWeek: 195,
+            depots: ['DEP-JUB', 'DEP-HOF'],
+            crossdockTonight: [
+                { to: 'DEP-JUB', items: 18, status: 'enroute', time: '21:30' },
+                { to: 'DEP-HOF', items: 7, status: 'scheduled', time: '23:00' }
+            ]
+        },
+        {
+            id: 'HUB-S', name: 'المركز الإقليمي - أبها', nameEn: 'Southern Hub - Abha',
+            region: 'الجنوبية', tier: 'hub',
+            lat: 18.2164, lng: 42.5053,
+            fleet: { heavy: 16, craneTruck: 1, light: 6 },
+            craneUtilization: 65,
+            inventory: { totalSKUs: 95, fastMovers: 30, slowMovers: 65 },
+            maintenance: { active: 1, scheduled: 2, baysTotal: 4 },
+            ordersToday: 14, ordersThisWeek: 89,
+            depots: ['DEP-KMS', 'DEP-JZN', 'DEP-NJR'],
+            crossdockTonight: [
+                { to: 'DEP-KMS', items: 5, status: 'scheduled', time: '22:00' },
+                { to: 'DEP-JZN', items: 3, status: 'scheduled', time: '01:00' }
+            ]
+        }
+    ],
+
+    depots: [
+        { id: 'DEP-KHJ', name: 'نقطة خدمة - الخرج', nameEn: 'Depot - Al-Kharj', hubId: 'HUB-C', lat: 24.1556, lng: 47.3122, fleet: { light: 4 }, fastMovers: 18, ordersToday: 6, stockLevel: 78 },
+        { id: 'DEP-QAS', name: 'نقطة خدمة - بريدة', nameEn: 'Depot - Buraydah', hubId: 'HUB-C', lat: 26.3292, lng: 43.9750, fleet: { light: 3 }, fastMovers: 15, ordersToday: 4, stockLevel: 65 },
+        { id: 'DEP-MAK', name: 'نقطة خدمة - مكة', nameEn: 'Depot - Makkah', hubId: 'HUB-W', lat: 21.3891, lng: 39.8579, fleet: { light: 5 }, fastMovers: 22, ordersToday: 8, stockLevel: 82 },
+        { id: 'DEP-MED', name: 'نقطة خدمة - المدينة', nameEn: 'Depot - Madinah', hubId: 'HUB-W', lat: 24.4539, lng: 39.6142, fleet: { light: 3 }, fastMovers: 14, ordersToday: 5, stockLevel: 71 },
+        { id: 'DEP-TAF', name: 'نقطة خدمة - الطائف', nameEn: 'Depot - Taif', hubId: 'HUB-W', lat: 21.2703, lng: 40.4159, fleet: { light: 2 }, fastMovers: 10, ordersToday: 3, stockLevel: 58 },
+        { id: 'DEP-JUB', name: 'نقطة خدمة - الجبيل', nameEn: 'Depot - Jubail', hubId: 'HUB-E', lat: 27.0046, lng: 49.6225, fleet: { light: 4 }, fastMovers: 20, ordersToday: 9, stockLevel: 85 },
+        { id: 'DEP-HOF', name: 'نقطة خدمة - الأحساء', nameEn: 'Depot - Al-Hofuf', hubId: 'HUB-E', lat: 25.3648, lng: 49.5869, fleet: { light: 3 }, fastMovers: 12, ordersToday: 4, stockLevel: 73 },
+        { id: 'DEP-KMS', name: 'نقطة خدمة - خميس مشيط', nameEn: 'Depot - Khamis Mushait', hubId: 'HUB-S', lat: 18.3066, lng: 42.7347, fleet: { light: 3 }, fastMovers: 12, ordersToday: 5, stockLevel: 69 },
+        { id: 'DEP-JZN', name: 'نقطة خدمة - جازان', nameEn: 'Depot - Jazan', hubId: 'HUB-S', lat: 16.8894, lng: 42.5611, fleet: { light: 2 }, fastMovers: 8, ordersToday: 2, stockLevel: 55 },
+        { id: 'DEP-NJR', name: 'نقطة خدمة - نجران', nameEn: 'Depot - Najran', hubId: 'HUB-S', lat: 17.4933, lng: 44.1277, fleet: { light: 2 }, fastMovers: 8, ordersToday: 2, stockLevel: 48 }
+    ]
 };

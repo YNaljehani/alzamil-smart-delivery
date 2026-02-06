@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASDP - شبكة التوزيع | Hub-and-Spoke Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/network.css">
+</head>
+<body>
+
+<div class="network-page">
+
+    <!-- Header -->
+    <div class="network-header">
+        <h1><i class="bi bi-diagram-3"></i> شبكة التوزيع - Hub & Spoke</h1>
+        <div style="display:flex; gap:1rem; align-items:center;">
+            <a href="dashboard.html" class="back-link"><i class="bi bi-speedometer2"></i> لوحة التحكم</a>
+            <a href="index.html" class="back-link"><i class="bi bi-house"></i> الرئيسية</a>
+        </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="network-kpi-strip">
+        <div class="network-kpi-card hub-card">
+            <div class="kpi-value">4</div>
+            <div class="kpi-label">مراكز إقليمية (Hubs)</div>
+        </div>
+        <div class="network-kpi-card depot-card">
+            <div class="kpi-value">10</div>
+            <div class="kpi-label">نقاط خدمة (Depots)</div>
+        </div>
+        <div class="network-kpi-card fleet-card">
+            <div class="kpi-value">90</div>
+            <div class="kpi-label">شاحنة ثقيلة</div>
+        </div>
+        <div class="network-kpi-card crane-card">
+            <div class="kpi-value">8</div>
+            <div class="kpi-label">شاحنة رافعة مخصصة</div>
+        </div>
+        <div class="network-kpi-card">
+            <div class="kpi-value">113</div>
+            <div class="kpi-label">طلب اليوم</div>
+        </div>
+        <div class="network-kpi-card">
+            <div class="kpi-value" style="color:#2ecc71;">78%</div>
+            <div class="kpi-label">متوسط استخدام الرافعات</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="network-content">
+
+        <!-- Side Panel -->
+        <div class="network-side-panel">
+
+            <!-- Default: Hub/Depot List -->
+            <div id="panelList">
+                <div class="panel-section">
+                    <div class="panel-section-title"><i class="bi bi-building"></i> المراكز الإقليمية (Hubs)</div>
+                    <div id="hubList"></div>
+                </div>
+                <div class="panel-section">
+                    <div class="panel-section-title"><i class="bi bi-shop"></i> نقاط الخدمة (Depots)</div>
+                    <div id="depotList"></div>
+                </div>
+                <div class="panel-section">
+                    <div class="panel-section-title"><i class="bi bi-truck"></i> تجهيزات الليلة (Cross-Dock)</div>
+                    <div id="crossdockList"></div>
+                </div>
+            </div>
+
+            <!-- Detail View (shown on click) -->
+            <div id="panelDetail" class="location-detail">
+                <div class="location-detail-header" id="detailHeader">
+                    <div class="location-icon" id="detailIcon"></div>
+                    <div class="location-info">
+                        <h3 id="detailName"></h3>
+                        <span class="location-type-badge" id="detailBadge"></span>
+                    </div>
+                </div>
+                <div class="panel-section">
+                    <div class="panel-section-title"><i class="bi bi-bar-chart"></i> الإحصائيات</div>
+                    <div class="stat-grid" id="detailStats"></div>
+                </div>
+                <div class="panel-section" id="detailFleetSection">
+                    <div class="panel-section-title"><i class="bi bi-truck"></i> الأسطول</div>
+                    <div id="detailFleet"></div>
+                </div>
+                <div class="panel-section" id="detailUtilSection" style="display:none;">
+                    <div class="panel-section-title"><i class="bi bi-gear"></i> الاستخدام والصيانة</div>
+                    <div id="detailUtil"></div>
+                </div>
+                <div class="panel-section" id="detailCrossdockSection" style="display:none;">
+                    <div class="panel-section-title"><i class="bi bi-arrow-left-right"></i> تجهيزات الليلة</div>
+                    <div id="detailCrossdock"></div>
+                </div>
+                <div style="padding:1rem 1.25rem;">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="showListPanel()">
+                        <i class="bi bi-arrow-right"></i> العودة للقائمة
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Map -->
+        <div class="network-map-container">
+            <div id="networkMap"></div>
+            <div class="map-legend">
+                <div class="legend-title">دليل الخريطة</div>
+                <div class="legend-item"><div class="legend-dot hub"></div> مركز إقليمي (Hub)</div>
+                <div class="legend-item"><div class="legend-dot depot"></div> نقطة خدمة (Depot)</div>
+                <div class="legend-item"><div class="legend-line spoke"></div> خط توزيع (Spoke)</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/mock-data.js"></script>
+<script>
+(function() {
+    // ---- Init Map ----
+    var map = L.map('networkMap', {
+        center: [23.8859, 45.0792],
+        zoom: 6,
+        zoomControl: false
+    });
+
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        maxZoom: 19
+    }).addTo(map);
+
+    var data = ASDP.mockData;
+    var hubMarkers = {};
+    var depotMarkers = {};
+    var spokeLines = [];
+
+    // ---- Create Hub Markers ----
+    data.hubs.forEach(function(hub) {
+        var icon = L.divIcon({
+            className: 'leaflet-hub-marker',
+            html: '<i class="bi bi-building" style="font-size:16px;"></i>',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+
+        var marker = L.marker([hub.lat, hub.lng], { icon: icon }).addTo(map);
+        marker.bindTooltip('<b>' + hub.name + '</b><br>' + hub.fleet.heavy + ' شاحنة ثقيلة | ' + hub.fleet.craneTruck + ' شاحنة رافعة', {
+            direction: 'top', offset: [0, -20]
+        });
+        marker.on('click', function() { showHubDetail(hub.id); });
+        hubMarkers[hub.id] = marker;
+    });
+
+    // ---- Create Depot Markers ----
+    data.depots.forEach(function(depot) {
+        var icon = L.divIcon({
+            className: 'leaflet-depot-marker',
+            html: '<i class="bi bi-shop" style="font-size:12px;"></i>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        var marker = L.marker([depot.lat, depot.lng], { icon: icon }).addTo(map);
+        marker.bindTooltip('<b>' + depot.name + '</b><br>مخزون: ' + depot.stockLevel + '%', {
+            direction: 'top', offset: [0, -14]
+        });
+        marker.on('click', function() { showDepotDetail(depot.id); });
+        depotMarkers[depot.id] = marker;
+    });
+
+    // ---- Draw Spoke Lines ----
+    data.hubs.forEach(function(hub) {
+        hub.depots.forEach(function(depotId) {
+            var depot = data.depots.find(function(d) { return d.id === depotId; });
+            if (depot) {
+                var line = L.polyline(
+                    [[hub.lat, hub.lng], [depot.lat, depot.lng]],
+                    { color: '#3498db', weight: 2, opacity: 0.5, dashArray: '8 6' }
+                ).addTo(map);
+                spokeLines.push(line);
+            }
+        });
+    });
+
+    // ---- Build Side Panel Lists ----
+    function buildHubList() {
+        var container = document.getElementById('hubList');
+        var html = '';
+        data.hubs.forEach(function(hub) {
+            var totalFleet = hub.fleet.heavy + hub.fleet.craneTruck + hub.fleet.light;
+            html += '<div class="hub-list-item" onclick="showHubDetail(\'' + hub.id + '\')">';
+            html += '<div class="hub-marker tier-hub"><i class="bi bi-building"></i></div>';
+            html += '<div class="hub-info">';
+            html += '<h4>' + hub.name + '</h4>';
+            html += '<div class="hub-meta">' + totalFleet + ' مركبة | ' + hub.ordersToday + ' طلب اليوم | رافعات: ' + hub.craneUtilization + '%</div>';
+            html += '</div>';
+            html += '<div class="hub-status"></div>';
+            html += '</div>';
+        });
+        container.innerHTML = html;
+    }
+
+    function buildDepotList() {
+        var container = document.getElementById('depotList');
+        var html = '';
+        data.depots.forEach(function(depot) {
+            var hub = data.hubs.find(function(h) { return h.id === depot.hubId; });
+            html += '<div class="hub-list-item" onclick="showDepotDetail(\'' + depot.id + '\')">';
+            html += '<div class="hub-marker tier-depot"><i class="bi bi-shop"></i></div>';
+            html += '<div class="hub-info">';
+            html += '<h4>' + depot.name + '</h4>';
+            html += '<div class="hub-meta">تابع لـ ' + (hub ? hub.region : '') + ' | مخزون: ' + depot.stockLevel + '% | ' + depot.ordersToday + ' طلب</div>';
+            html += '</div>';
+            html += '<div class="hub-status" style="background:' + (depot.stockLevel > 60 ? '#2ecc71' : '#f39c12') + ';"></div>';
+            html += '</div>';
+        });
+        container.innerHTML = html;
+    }
+
+    function buildCrossdockList() {
+        var container = document.getElementById('crossdockList');
+        var html = '';
+        data.hubs.forEach(function(hub) {
+            if (!hub.crossdockTonight) return;
+            hub.crossdockTonight.forEach(function(cd) {
+                var depot = data.depots.find(function(d) { return d.id === cd.to; });
+                html += '<div class="crossdock-item">';
+                html += '<div class="crossdock-time">' + cd.time + '</div>';
+                html += '<div class="crossdock-route">';
+                html += '<div class="route-from-to">' + hub.region + ' → ' + (depot ? depot.name.replace('نقطة خدمة - ', '') : cd.to) + '</div>';
+                html += '<div class="route-items">' + cd.items + ' منتج</div>';
+                html += '</div>';
+                var statusAr = cd.status === 'enroute' ? 'في الطريق' : cd.status === 'loading' ? 'جاري التحميل' : 'مجدول';
+                html += '<span class="crossdock-status ' + cd.status + '">' + statusAr + '</span>';
+                html += '</div>';
+            });
+        });
+        container.innerHTML = html;
+    }
+
+    buildHubList();
+    buildDepotList();
+    buildCrossdockList();
+
+    // ---- Show Hub Detail ----
+    window.showHubDetail = function(hubId) {
+        var hub = data.hubs.find(function(h) { return h.id === hubId; });
+        if (!hub) return;
+
+        map.flyTo([hub.lat, hub.lng], 8, { duration: 0.8 });
+
+        document.getElementById('panelList').style.display = 'none';
+        var detail = document.getElementById('panelDetail');
+        detail.style.display = 'block';
+        detail.classList.add('active');
+
+        document.getElementById('detailIcon').innerHTML = '<i class="bi bi-building" style="font-size:1.5rem;"></i>';
+        document.getElementById('detailName').textContent = hub.name;
+        var badge = document.getElementById('detailBadge');
+        badge.textContent = 'مركز إقليمي - ' + hub.region;
+        badge.className = 'location-type-badge type-hub';
+
+        // Stats
+        var totalFleet = hub.fleet.heavy + hub.fleet.craneTruck + hub.fleet.light;
+        document.getElementById('detailStats').innerHTML =
+            '<div class="stat-item highlight"><div class="stat-number">' + hub.ordersToday + '</div><div class="stat-label">طلب اليوم</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + hub.ordersThisWeek + '</div><div class="stat-label">طلب هذا الأسبوع</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + totalFleet + '</div><div class="stat-label">إجمالي المركبات</div></div>' +
+            '<div class="stat-item warning"><div class="stat-number">' + hub.inventory.totalSKUs + '</div><div class="stat-label">إجمالي المنتجات</div></div>';
+
+        // Fleet
+        document.getElementById('detailFleet').innerHTML =
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-truck"></i> شاحنات ثقيلة</div><div class="fleet-count">' + hub.fleet.heavy + '</div></div>' +
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-cone-striped"></i> شاحنات رافعة مخصصة</div><div class="fleet-count">' + hub.fleet.craneTruck + '</div></div>' +
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-car-front"></i> مركبات خفيفة</div><div class="fleet-count">' + hub.fleet.light + '</div></div>';
+
+        // Utilization & Maintenance
+        document.getElementById('detailUtilSection').style.display = '';
+        var utilHtml = '';
+        utilHtml += makeUtilBar('استخدام الرافعات', hub.craneUtilization);
+        utilHtml += makeUtilBar('سعة الصيانة', Math.round((hub.maintenance.active / hub.maintenance.baysTotal) * 100));
+        utilHtml += '<div style="margin-top:0.5rem; font-size:0.8rem;">';
+        utilHtml += '<i class="bi bi-wrench"></i> صيانة نشطة: <b>' + hub.maintenance.active + '</b> | مجدولة: <b>' + hub.maintenance.scheduled + '</b> | حجرات: <b>' + hub.maintenance.baysTotal + '</b>';
+        utilHtml += '</div>';
+        document.getElementById('detailUtil').innerHTML = utilHtml;
+
+        // Cross-dock
+        document.getElementById('detailCrossdockSection').style.display = '';
+        var cdHtml = '';
+        if (hub.crossdockTonight && hub.crossdockTonight.length > 0) {
+            hub.crossdockTonight.forEach(function(cd) {
+                var depot = data.depots.find(function(d) { return d.id === cd.to; });
+                var statusAr = cd.status === 'enroute' ? 'في الطريق' : cd.status === 'loading' ? 'جاري التحميل' : 'مجدول';
+                cdHtml += '<div class="crossdock-item">';
+                cdHtml += '<div class="crossdock-time">' + cd.time + '</div>';
+                cdHtml += '<div class="crossdock-route"><div class="route-from-to">→ ' + (depot ? depot.name.replace('نقطة خدمة - ', '') : cd.to) + '</div><div class="route-items">' + cd.items + ' منتج</div></div>';
+                cdHtml += '<span class="crossdock-status ' + cd.status + '">' + statusAr + '</span>';
+                cdHtml += '</div>';
+            });
+        } else {
+            cdHtml = '<div style="text-align:center; color:#999; padding:1rem;">لا توجد تجهيزات الليلة</div>';
+        }
+        document.getElementById('detailCrossdock').innerHTML = cdHtml;
+    };
+
+    // ---- Show Depot Detail ----
+    window.showDepotDetail = function(depotId) {
+        var depot = data.depots.find(function(d) { return d.id === depotId; });
+        if (!depot) return;
+
+        var hub = data.hubs.find(function(h) { return h.id === depot.hubId; });
+        map.flyTo([depot.lat, depot.lng], 9, { duration: 0.8 });
+
+        document.getElementById('panelList').style.display = 'none';
+        var detail = document.getElementById('panelDetail');
+        detail.style.display = 'block';
+        detail.classList.add('active');
+
+        document.getElementById('detailIcon').innerHTML = '<i class="bi bi-shop" style="font-size:1.5rem;"></i>';
+        document.getElementById('detailName').textContent = depot.name;
+        var badge = document.getElementById('detailBadge');
+        badge.textContent = 'نقطة خدمة - تابعة لـ ' + (hub ? hub.name.replace('المركز الإقليمي - ', '') : '');
+        badge.className = 'location-type-badge type-depot';
+
+        // Stats
+        document.getElementById('detailStats').innerHTML =
+            '<div class="stat-item highlight"><div class="stat-number">' + depot.ordersToday + '</div><div class="stat-label">طلب اليوم</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + depot.fastMovers + '</div><div class="stat-label">منتج سريع الحركة</div></div>' +
+            '<div class="stat-item ' + (depot.stockLevel > 60 ? '' : 'warning') + '"><div class="stat-number">' + depot.stockLevel + '%</div><div class="stat-label">مستوى المخزون</div></div>' +
+            '<div class="stat-item"><div class="stat-number">' + depot.fleet.light + '</div><div class="stat-label">مركبات خفيفة</div></div>';
+
+        // Fleet
+        document.getElementById('detailFleet').innerHTML =
+            '<div class="fleet-row"><div class="fleet-type"><i class="bi bi-car-front"></i> مركبات خفيفة</div><div class="fleet-count">' + depot.fleet.light + '</div></div>' +
+            '<div style="font-size:0.75rem; color:#6c757d; margin-top:0.5rem;"><i class="bi bi-info-circle"></i> الشاحنات الثقيلة والرافعات تُرسل من المركز الإقليمي عند الحاجة</div>';
+
+        // Utilization
+        document.getElementById('detailUtilSection').style.display = '';
+        document.getElementById('detailUtil').innerHTML = makeUtilBar('مستوى المخزون', depot.stockLevel);
+
+        // No cross-dock for depots
+        document.getElementById('detailCrossdockSection').style.display = 'none';
+    };
+
+    // ---- Show List Panel ----
+    window.showListPanel = function() {
+        document.getElementById('panelDetail').style.display = 'none';
+        document.getElementById('panelDetail').classList.remove('active');
+        document.getElementById('panelList').style.display = '';
+        map.flyTo([23.8859, 45.0792], 6, { duration: 0.8 });
+    };
+
+    // ---- Utility: Utilization Bar ----
+    function makeUtilBar(label, pct) {
+        var cls = pct >= 70 ? 'high' : pct >= 40 ? 'medium' : 'low';
+        return '<div class="util-bar-container">' +
+            '<div class="util-bar-label"><span class="label-name">' + label + '</span><span class="label-pct">' + pct + '%</span></div>' +
+            '<div class="util-bar"><div class="util-bar-fill ' + cls + '" style="width:' + pct + '%;"></div></div>' +
+            '</div>';
+    }
+
+})();
+</script>
+
+</body>
+</html>
